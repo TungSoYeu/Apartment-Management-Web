@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Chung Cư</title>
+    <style>
+        /* --- CSS STYLING --- */
+        :root {
+            --primary: #4f46e5;
+            --bg: #f3f4f6;
+            --text: #1f2937;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            color: var(--text);
+        }
+
+        /* Login Styles */
+        #login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        /* Dashboard Styles */
+        #dashboard-section {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid #ccc;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { margin: 0 0 10px 0; font-size: 1.5rem; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #666; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        
+        .card.occupied { border-left-color: #10b981; }
+        .card.occupied .status-badge { background: #d1fae5; color: #065f46; }
+        .card.vacant { border-left-color: #9ca3af; }
+        .card.vacant .status-badge { background: #f3f4f6; color: #374151; }
+
+        /* Nút Sửa nhỏ trên card */
+        .btn-edit-card {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #f59e0b; /* Màu cam */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            width: auto;
+            cursor: pointer;
+            display: none; /* Mặc định ẩn, Admin mới hiện */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .close-btn { float: right; font-size: 24px; font-weight: bold; cursor: pointer; color: #aaa; }
+        .close-btn:hover { color: black; }
+
+        .btn-add { background-color: #10b981; width: auto; }
+        .btn-logout { width: auto; background: #ef4444; }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-section">
+        <div class="login-card">
+            <h2>🔑 Đăng Nhập</h2>
+            <p>Hệ Thống Quản Lý Chung Cư</p>
+            <input type="email" id="email" placeholder="Email" value="admin@test.com">
+            <input type="password" id="password" placeholder="Password" value="123456">
+            <button onclick="handleLogin()">Vào Hệ Thống</button>
+            <p id="error-msg" style="color: red; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="dashboard-section">
+        <div class="header">
+            <h1>🏢 Quản Lý Căn Hộ</h1>
+            <div class="header-actions">
+                <button id="btn-create-apt" class="btn-add" onclick="openAddModal()" style="display: none;">+ Thêm Căn Hộ</button>
+                <button class="btn-logout" onclick="logout()">Đăng Xuất</button>
+            </div>
+        </div>
+        
+        <div id="apartment-grid" class="grid-container"></div>
+    </div>
+
+    <div id="aptModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Thêm Căn Hộ</h2>
+            <form id="aptForm" onsubmit="handleSaveApartment(event)">
+                <input type="hidden" id="apt-id"> 
+                
+                <input type="text" id="apt-code" placeholder="Mã căn hộ (VD: C301)" required>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="apt-block" placeholder="Block (VD: C)" required>
+                    <input type="number" id="apt-floor" placeholder="Tầng" required>
+                </div>
+                <input type="number" id="apt-area" placeholder="Diện tích (m2)" required>
+                <select id="apt-status">
+                    <option value="VACANT">Trống (Vacant)</option>
+                    <option value="OCCUPIED">Đang ở (Occupied)</option>
+                    <option value="MAINTENANCE">Bảo trì</select>
+                </select>
+                <button type="submit" style="margin-top: 10px;" id="btn-save">Lưu Dữ Liệu</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/v1';
+        let token = localStorage.getItem('token');
+        let userRole = localStorage.getItem('role');
+        let isEditing = false; // Biến cờ để biết đang Thêm hay Sửa
+
+        if (token) showDashboard();
+
+        // --- AUTH ---
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const res = await fetch(`${API_URL}/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.user.role);
+                    token = data.token;
+                    userRole = data.user.role;
+                    showDashboard();
+                } else {
+                    document.getElementById('error-msg').innerText = data.message;
+                }
+            } catch (err) { alert('Lỗi kết nối!'); }
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        // --- DASHBOARD ---
+        function showDashboard() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            
+            if (userRole === 'ADMIN') {
+                document.getElementById('btn-create-apt').style.display = 'block';
+            }
+            loadApartments();
+        }
+
+        async function loadApartments() {
+            try {
+                const res = await fetch(`${API_URL}/apartments`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const grid = document.getElementById('apartment-grid');
+                grid.innerHTML = ''; 
+
+                if(data.data.length === 0) {
+                    grid.innerHTML = '<p>Chưa có dữ liệu.</p>'; return;
+                }
+
+                data.data.forEach(apt => {
+                    const statusClass = apt.status === 'OCCUPIED' ? 'occupied' : 'vacant';
+                    const statusText = apt.status === 'OCCUPIED' ? 'Đã có người' : 'Trống';
+                    
+                    // Nút Sửa chỉ hiện cho Admin
+                    const editBtn = userRole === 'ADMIN' 
+                        ? `<button class="btn-edit-card" onclick="openEditModal('${apt._id}', '${apt.code}', '${apt.block}', '${apt.floor}', '${apt.area}', '${apt.status}')">✏️ Sửa</button>` 
+                        : '';
+
+                    const html = `
+                        <div class="card ${statusClass}">
+                            ${editBtn}
+                            <div class="info-row">
+                                <span class="status-badge">${statusText}</span>
+                                <strong>Block ${apt.block}</strong>
+                            </div>
+                            <h3>${apt.code}</h3>
+                            <div class="info-row">
+                                <span>Diện tích: ${apt.area} m²</span>
+                                <span>Tầng: ${apt.floor}</span>
+                            </div>
+                            <div class="info-row">
+                                <span>Chủ hộ: ${apt.owner ? apt.owner.fullname : '---'}</span>
+                            </div>
+                        </div>
+                    `;
+                    grid.innerHTML += html;
+                });
+                
+                // Hiển thị nút sửa sau khi render (nếu là Admin)
+                if(userRole === 'ADMIN') {
+                    document.querySelectorAll('.btn-edit-card').forEach(btn => btn.style.display = 'block');
+                }
+
+            } catch (err) { logout(); }
+        }
+
+        // --- LOGIC MODAL & FORM ---
+        const modal = document.getElementById('aptModal');
+        const form = document.getElementById('aptForm');
+
+        // Mở Modal để THÊM MỚI
+        function openAddModal() {
+            isEditing = false;
+            document.getElementById('modal-title').innerText = "Thêm Căn Hộ Mới";
+            form.reset(); // Xóa trắng form
+            modal.style.display = 'flex';
+        }
+
+        // Mở Modal để CHỈNH SỬA (Nhận dữ liệu từ nút bấm)
+        function openEditModal(id, code, block, floor, area, status) {
+            isEditing = true;
+            document.getElementById('modal-title').innerText = "Cập Nhật Căn Hộ";
+            
+            // Điền dữ liệu cũ vào ô input
+            document.getElementById('apt-id').value = id;
+            document.getElementById('apt-code').value = code;
+            document.getElementById('apt-block').value = block;
+            document.getElementById('apt-floor').value = floor;
+            document.getElementById('apt-area').value = area;
+            document.getElementById('apt-status').value = status;
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) closeModal();
+        }
+
+        // HÀM XỬ LÝ LƯU (Chung cho cả Thêm và Sửa)
+        async function handleSaveApartment(e) {
+            e.preventDefault();
+
+            const payload = {
+                code: document.getElementById('apt-code').value,
+                block: document.getElementById('apt-block').value,
+                floor: document.getElementById('apt-floor').value,
+                area: document.getElementById('apt-area').value,
+                status: document.getElementById('apt-status').value
+            };
+
+            const aptId = document.getElementById('apt-id').value;
+            
+            // Xác định Method và URL dựa trên mode
+            const method = isEditing ? 'PUT' : 'POST';
+            const url = isEditing 
+                ? `${API_URL}/apartments/${aptId}` // API Update
+                : `${API_URL}/apartments`;         // API Create
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert(isEditing ? '✅ Cập nhật thành công!' : '✅ Thêm mới thành công!');
+                    closeModal();
+                    loadApartments(); // Load lại danh sách để thấy thay đổi
+                } else {
+                    alert('❌ Lỗi: ' + data.message);
+                }
+            } catch (err) {
+                alert('❌ Lỗi kết nối!');
+            }
+        }
+    </script>
+</body>
+</html>
