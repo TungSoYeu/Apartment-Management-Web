@@ -11,7 +11,7 @@ exports.create = async (req, res, next) => {
 
 exports.findAll = async (req, res, next) => {
   try {
-    const apts = await apartmentService.getAllApartments(req.query);
+    const apts = await apartmentService.getAllApartments(req.query, req.user);
     res.status(200).json({ success: true, count: apts.length, data: apts });
   } catch (err) {
     next(err);

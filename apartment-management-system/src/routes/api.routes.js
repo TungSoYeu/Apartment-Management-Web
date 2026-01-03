@@ -29,5 +29,6 @@ router.post(
   billCtrl.generateBills,
 );
 router.post("/bills/:id/pay", protect, billCtrl.payBill);
+router.get("/bills", protect, billCtrl.findAll);
 
 module.exports = router;

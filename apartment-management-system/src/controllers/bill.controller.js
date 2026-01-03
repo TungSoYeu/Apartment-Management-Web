@@ -18,3 +18,12 @@ exports.payBill = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.findAll = async (req, res, next) => {
+  try {
+    const bills = await billService.getAllBills(req.query, req.user);
+    res.status(200).json({ success: true, count: bills.length, data: bills });
+  } catch (err) {
+    next(err);
+  }
+};

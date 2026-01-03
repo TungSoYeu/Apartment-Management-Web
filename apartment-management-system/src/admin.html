@@ -201,9 +201,101 @@
       .hidden {
         display: none;
       }
+      .menu-bar {
+        display: flex;
+        justify-content: center;
+        background-color: var(--white);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .menu-item {
+        padding: 10px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #555;
+        transition: 0.2s;
+        border-radius: 6px;
+      }
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: var(--primary);
+        color: var(--white);
+      }
+      .bill-card {
+        background: var(--white);
+        border-radius: 10px;
+        padding: 20px;
+        border-left: 6px solid var(--info);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: 0.2s;
+      }
+      .bill-card:hover {
+        transform: translateY(-5px);
+      }
+      .bill-card.paid {
+        border-left-color: var(--success);
+      }
+      .bill-card.unpaid {
+        border-left-color: var(--danger);
+      }
+      .bill-card.overdue {
+        border-left-color: var(--warning);
+      }
+      .bill-card h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--primary);
+      }
+      .bill-card .price {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--text);
+        text-align: center;
+        margin: 10px 0;
+      }
+      .status-paid {
+        color: var(--success);
+        font-weight: bold;
+      }
+      .status-unpaid {
+        color: var(--danger);
+        font-weight: bold;
+      }
+      .status-overdue {
+        color: var(--warning);
+        font-weight: bold;
+      }
+      #notification-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 1001;
+        display: none;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: center;
+      }
+      #notification-box.success {
+        background-color: var(--success);
+        color: var(--white);
+      }
+      #notification-box.error {
+        background-color: var(--danger);
+        color: var(--white);
+      }
     </style>
   </head>
   <body>
+    <div id="notification-box"></div>
     <div id="login-section">
       <div class="login-card">
         <h2>🔑 Admin Portal</h2>
@@ -225,50 +317,86 @@
     </div>
 
     <div id="dashboard-section">
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 20px;
-          border-bottom: 2px solid #eee;
-          padding-bottom: 20px;
-        "
-      >
-        <h1 style="margin: 0; color: var(--primary)">🏢 Quản Lý Căn Hộ</h1>
-        <div style="display: flex; gap: 10px">
-          <button
-            id="btn-create-apt"
-            onclick="openAddModal()"
-            style="background: var(--success); display: none"
-          >
-            + Thêm Căn Hộ
-          </button>
-          <button onclick="logout()" style="background: var(--danger)">
-            Thoát
-          </button>
+      <div class="menu-bar">
+        <div class="menu-item active" onclick="showSection('apartment-management')">
+          Quản lý Thông tin Cư dân
         </div>
+        <div class="menu-item" onclick="showSection('fee-management')">
+          Quản lý và Thu phí
+        </div>
+        <div class="menu-item" onclick="showSection('feedback-management')">
+          Thông báo và Phản hồi từ Cư dân
+        </div>
+      </div>
+      
+      <div id="apartment-management-section">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+          "
+        >
+          <h1 style="margin: 0; color: var(--primary)">🏢 Quản Lý Căn Hộ</h1>
+          <div style="display: flex; gap: 10px">
+            <button
+              id="btn-create-apt"
+              onclick="openAddModal()"
+              style="background: var(--success); display: none"
+            >
+              + Thêm Căn Hộ
+            </button>
+            <button onclick="logout()" style="background: var(--danger)">
+              Thoát
+            </button>
+          </div>
+        </div>
+  
+        <div class="filter-bar">
+          <div class="filter-item">
+            <label>🔍 Tìm kiếm:</label
+            ><input
+              type="text"
+              id="search-input"
+              placeholder="Nhập mã phòng, tên chủ..."
+              onkeyup="handleFilter()"
+            />
+          </div>
+          <div class="filter-item">
+            <label>📂 Trạng thái:</label>
+            <select id="filter-status" onchange="handleFilter()">
+              <option value="">Tất cả</option>
+              <option value="OCCUPIED">Đã có người</option>
+              <option value="VACANT">Phòng trống</option>
+            </select>
+          </div>
+        </div>
+        <div id="apartment-grid" class="grid-container"></div>
+      </div>
+      
+      <div id="fee-management-section" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h1 style="margin: 0; color: var(--primary)">💰 Quản lý và Thu phí</h1>
+          <button onclick="generateBills()" style="background: var(--success); width: auto;">+ Tạo hóa đơn tháng này</button>
+        </div>
+        <div id="bill-grid" class="grid-container"></div>
+      </div>
+      
+      <div id="feedback-management-section" style="display: none;">
+        <h1>Thông báo và Phản hồi từ Cư dân</h1>
       </div>
 
-      <div class="filter-bar">
-        <div class="filter-item">
-          <label>🔍 Tìm kiếm:</label
-          ><input
-            type="text"
-            id="search-input"
-            placeholder="Nhập mã phòng, tên chủ..."
-            onkeyup="handleFilter()"
-          />
+    </div>
+    
+    <div id="bill-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('bill-modal')">&times;</span>
+            <h2>Thanh toán hoá đơn</h2>
+            <div id="bill-details"></div>
+            <img id="qr-code" src="" alt="QR Code" style="width: 100%; max-width: 300px; margin: 20px auto; display: block;">
         </div>
-        <div class="filter-item">
-          <label>📂 Trạng thái:</label>
-          <select id="filter-status" onchange="handleFilter()">
-            <option value="">Tất cả</option>
-            <option value="OCCUPIED">Đã có người</option>
-            <option value="VACANT">Phòng trống</option>
-          </select>
-        </div>
-      </div>
-      <div id="apartment-grid" class="grid-container"></div>
     </div>
 
     <div id="aptModal" class="modal">
@@ -396,10 +524,136 @@
       let token = localStorage.getItem("token");
       let userRole = localStorage.getItem("role");
       let allApartments = [];
+      let allBills = [];
       let isEditing = false;
 
       if (token) showDashboard();
+      
+      function showNotification(message, type) {
+        const notificationBox = document.getElementById('notification-box');
+        notificationBox.textContent = message;
+        notificationBox.className = type;
+        notificationBox.style.display = 'block';
+        setTimeout(() => {
+          notificationBox.style.display = 'none';
+        }, 3000);
+      }
 
+      async function showSection(sectionId) {
+        document.getElementById('apartment-management-section').style.display = 'none';
+        document.getElementById('fee-management-section').style.display = 'none';
+        document.getElementById('feedback-management-section').style.display = 'none';
+        
+        document.getElementById(sectionId + '-section').style.display = 'block';
+        
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => item.classList.remove('active'));
+        
+        document.querySelector(`.menu-item[onclick="showSection('${sectionId}')"]`).classList.add('active');
+
+        if (sectionId === 'fee-management') {
+          await loadBills();
+        }
+      }
+
+      async function generateBills() {
+        const month = new Date().getMonth() + 1;
+        const year = new Date().getFullYear();
+        try {
+          const res = await fetch(`${API_URL}/bills/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ month, year }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            showNotification(`Đã tạo ${data.data.created} hóa đơn. Bỏ qua ${data.data.skipped} hóa đơn đã tồn tại.`, 'success');
+            loadBills();
+          } else {
+            showNotification('Lỗi: ' + data.message, 'error');
+          }
+        } catch (err) {
+          showNotification('Lỗi kết nối Server!', 'error');
+        }
+      }
+
+      async function loadBills() {
+        try {
+          const res = await fetch(`${API_URL}/bills`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          allBills = data.data;
+          renderBills(allBills);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      
+      function renderBills(bills) {
+        const billGrid = document.getElementById('bill-grid');
+        billGrid.innerHTML = '';
+        if (bills.length === 0) {
+          billGrid.innerHTML = '<p style="text-align: center;">Chưa có hóa đơn nào.</p>';
+          return;
+        }
+        bills.forEach(bill => {
+            const billCard = document.createElement('div');
+            billCard.className = `bill-card ${bill.status.toLowerCase()}`;
+            billCard.innerHTML = `
+                <h3>${bill.apartmentSnapshot.code}</h3>
+                <div class="info-row">
+                    <span>Chủ hộ:</span>
+                    <strong>${bill.apartmentSnapshot.ownerName}</strong>
+                </div>
+                <div class="price">
+                    ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bill.totalAmount)}
+                </div>
+                <div class="info-row">
+                    <span>Hạn chót:</span>
+                    <strong>${new Date(bill.deadline).toLocaleDateString()}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Trạng thái:</span>
+                    <strong class="status-${bill.status.toLowerCase()}">${bill.status}</strong>
+                </div>
+                <button style="background: var(--info); width: 100%; margin-top: 10px;" onclick="showPaymentQR('${bill._id}')">Xem Chi tiết & QR</button>
+            `;
+            billGrid.appendChild(billCard);
+        });
+      }
+
+      function showPaymentQR(billId) {
+        const bill = allBills.find(b => b._id === billId);
+        if (bill) {
+            let servicesHtml = '';
+            bill.services.forEach(svc => {
+                servicesHtml += `<p><strong>${svc.name}:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(svc.amount)}</p>`;
+            });
+
+            let additionalChargesHtml = '';
+            if (bill.additionalCharges) {
+              bill.additionalCharges.forEach(charge => {
+                  additionalChargesHtml += `<p><strong>${charge.name}:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(charge.amount)}</p>`;
+              });
+            }
+
+            document.getElementById('qr-code').src = bill.qrCode;
+            document.getElementById('bill-details').innerHTML = `
+                <p><strong>Căn hộ:</strong> ${bill.apartmentSnapshot.code}</p>
+                <p><strong>Chủ hộ:</strong> ${bill.apartmentSnapshot.ownerName}</p>
+                ${servicesHtml}
+                <p><strong>Điện (3,000 VND/kWh):</strong> ${bill.electricity.usage} kWh x 3,000 = ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bill.electricity.amount)}</p>
+                <p><strong>Nước (15,000 VND/m³):</strong> ${bill.water.usage} m³ x 15,000 = ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bill.water.amount)}</p>
+                ${additionalChargesHtml}
+                <hr>
+                <p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bill.totalAmount)}</p>
+                <p><strong>Hạn chót thanh toán:</strong> ${new Date(bill.deadline).toLocaleDateString()}</p>
+            `;
+            document.getElementById('bill-modal').style.display = 'flex';
+        }
+      }
+      
       // AUTH
       async function handleLogin() {
         const email = document.getElementById("email").value,
@@ -417,9 +671,9 @@
             token = data.token;
             userRole = data.user.role;
             showDashboard();
-          } else document.getElementById("error-msg").innerText = data.message;
+          } else showNotification(data.message, 'error');
         } catch (err) {
-          alert("Lỗi kết nối Server!");
+          showNotification("Lỗi kết nối Server!", 'error');
         }
       }
       function logout() {
@@ -524,7 +778,7 @@
 
       function goToStep2() {
         if (!document.getElementById("apt-code").value) {
-          alert("Vui lòng nhập mã căn hộ!");
+          showNotification("Vui lòng nhập mã căn hộ!", 'error');
           return;
         }
         document.getElementById("step-1").classList.add("hidden");
@@ -544,28 +798,20 @@
 
       function openAddModal() {
         isEditing = false;
-        document.getElementById("modal-title").innerText = "Thêm Căn Hộ";
+        document.getElementById("modal-title").innerText = "Thêm Căn Hộ Mới";
         document.getElementById("aptForm").reset();
-        goToStep1();
-        checkStatus();
-        document.getElementById("step-indicator").style.display = "flex";
         document.getElementById("aptModal").style.display = "flex";
       }
 
       function openEditModal(id, code, block, floor, area, status) {
         isEditing = true;
         document.getElementById("modal-title").innerText = "Cập Nhật Căn Hộ";
-        document.getElementById("aptForm").reset();
         document.getElementById("apt-id").value = id;
         document.getElementById("apt-code").value = code;
         document.getElementById("apt-block").value = block;
         document.getElementById("apt-floor").value = floor;
         document.getElementById("apt-area").value = area;
         document.getElementById("apt-status").value = status;
-
-        goToStep1();
-        checkStatus(); // Gọi hàm này để quyết định hiện nút Next hay Save
-        document.getElementById("step-indicator").style.display = "flex";
         document.getElementById("aptModal").style.display = "flex";
       }
 
@@ -611,12 +857,12 @@
           });
           const data = await res.json();
           if (data.success) {
-            alert("Thành công!");
+            showNotification("Thành công!", 'success');
             closeModal("aptModal");
             loadApartments();
-          } else alert(data.message);
+          } else showNotification(data.message, 'error');
         } catch (e) {
-          alert("Lỗi: " + e.message);
+          showNotification("Lỗi: " + e.message, 'error');
         }
       }
 

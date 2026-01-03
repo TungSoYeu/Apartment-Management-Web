@@ -70,16 +70,25 @@ class ApartmentService {
   }
 
   // ... (Giữ nguyên phần getAll và delete) ...
-  async getAllApartments(query) {
+  async getAllApartments(query, user) {
     const { block, floor, status } = query;
     const filter = {};
-    if (block) filter.block = block;
-    if (floor) filter.floor = floor;
-    if (status) filter.status = status;
+    if (user.role === 'RESIDENT') {
+      filter.owner = user._id;
+    } else {
+      if (block) filter.block = block;
+      if (floor) filter.floor = floor;
+      if (status) filter.status = status;
+    }
 
     const apartments = await Apartment.find(filter)
       .populate("owner", "fullname phone email")
       .lean();
+
+    if (user.role === 'ADMIN') {
+      return apartments;
+    }
+
     return apartments.map((apt) => ({
       ...apt,
       owner: apt.owner
