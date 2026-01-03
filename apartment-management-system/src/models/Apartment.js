@@ -29,6 +29,10 @@ const apartmentSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
+    residents: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }],
     // --- THÔNG TIN HỢP ĐỒNG (MỚI THÊM) ---
     contract: {
       number: { type: String, default: "" }, // Số hợp đồng
