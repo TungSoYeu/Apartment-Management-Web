@@ -14,11 +14,12 @@ router.patch(
   authorize("ADMIN"),
   userCtrl.approve,
 );
-
+router.put("/users/:id", protect, authorize("ADMIN"), userCtrl.update);
 // --- Apartment ---
 router.get("/apartments", protect, aptCtrl.findAll);
 router.post("/apartments", protect, authorize("ADMIN"), aptCtrl.create);
 router.put("/apartments/:id", protect, authorize("ADMIN"), aptCtrl.update);
+router.delete("/apartments/:id", protect, authorize("ADMIN"), aptCtrl.delete);
 
 // --- Finance ---
 router.post(
@@ -28,5 +29,6 @@ router.post(
   billCtrl.generateBills,
 );
 router.post("/bills/:id/pay", protect, billCtrl.payBill);
+router.get("/bills", protect, billCtrl.findAll);
 
 module.exports = router;
