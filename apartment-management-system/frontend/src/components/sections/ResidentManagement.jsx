@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ContractModal from "../ContractModal"; // Import Modal mới
+import { HiFolder, HiDocumentText } from "react-icons/hi2";
 
 const ResidentManagement = ({ token, showToast }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
@@ -27,51 +28,51 @@ const ResidentManagement = ({ token, showToast }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm animate-fadeIn">
-      <div className="flex justify-between items-center mb-6 border-b pb-4">
-        <h2 className="text-2xl font-bold text-indigo-700 uppercase tracking-wide">
-          📂 Hồ Sơ Cư Dân
+    <div className="animate-fadeIn">
+      <div className="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+        <h2 className="text-2xl font-bold text-slate-200 flex items-center gap-3">
+          <HiFolder className="text-indigo-600" /> Hồ Sơ Cư Dân
         </h2>
-        <span className="bg-indigo-50 text-indigo-700 px-4 py-1 rounded-full text-sm font-bold border border-indigo-100">
+        <span className="bg-indigo-100 text-indigo-700 px-4 py-1 rounded-full text-sm font-bold border border-indigo-200">
           Tổng số: {residents.length} hộ
         </span>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="overflow-x-auto rounded-lg shadow-sm border border-slate-200">
+        <table className="min-w-full divide-y divide-slate-200">
+          <thead className="bg-slate-50">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Họ và Tên
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                 CCCD / CMND
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Căn hộ
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Hợp đồng
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Liên hệ
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-slate-200">
             {residents.map((apt) => (
               <tr
                 key={apt._id}
-                className="hover:bg-indigo-50 transition duration-150 group"
+                className="hover:bg-slate-50/70 transition duration-150 group transform hover:scale-[1.005] relative z-0"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-bold text-gray-900">
+                  <div className="text-sm font-bold text-slate-900">
                     {apt.owner.fullname}
                   </div>
-                  <div className="text-xs text-gray-500">{apt.owner.email}</div>
+                  <div className="text-xs text-slate-500">{apt.owner.email}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-1 rounded border border-gray-200">
+                  <span className="text-sm font-mono text-slate-700 bg-slate-100 px-2 py-1 rounded border border-slate-200">
                     {apt.owner.identityCard || "---"}
                   </span>
                 </td>
@@ -81,15 +82,14 @@ const ResidentManagement = ({ token, showToast }) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {/* Nút Xem Hợp Đồng */}
                   <button
                     onClick={() => setSelectedApt(apt)}
-                    className="text-xs font-bold text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-1.5 rounded transition shadow-sm flex items-center gap-1"
+                    className="text-xs font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 px-3 py-1.5 rounded-md transition-colors shadow-sm transform hover:scale-105 active:scale-95 flex items-center gap-1.5"
                   >
-                    <span>📄</span> Xem HĐ
+                    <HiDocumentText /> Xem HĐ
                   </button>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
                   {apt.owner.phone}
                 </td>
               </tr>
@@ -98,7 +98,7 @@ const ResidentManagement = ({ token, showToast }) => {
               <tr>
                 <td
                   colSpan="5"
-                  className="px-6 py-10 text-center text-gray-400 italic"
+                  className="px-6 py-10 text-center text-slate-400 italic"
                 >
                   Chưa có dữ liệu cư dân.
                 </td>
@@ -108,7 +108,6 @@ const ResidentManagement = ({ token, showToast }) => {
         </table>
       </div>
 
-      {/* Hiển thị Modal Hợp Đồng khi có selectedApt */}
       <ContractModal
         isOpen={!!selectedApt}
         onClose={() => setSelectedApt(null)}

@@ -1,4 +1,10 @@
 import { useState, useEffect } from "react";
+import {
+  HiBuildingOffice2,
+  HiTrash,
+  HiPencil,
+  HiPlus,
+} from "react-icons/hi2";
 import ApartmentModal from "../ApartmentModal";
 
 const ApartmentManagement = ({ token, userRole, showToast }) => {
@@ -93,10 +99,11 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
   );
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6 border-b pb-4">
-        <h2 className="text-2xl font-bold text-indigo-700">
-          🏢 Danh Sách Căn Hộ
+    <div className="animate-fadeIn">
+      <div className="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+        <h2 className="text-2xl font-bold text-slate-200 flex items-center gap-3">
+          <HiBuildingOffice2 className="text-indigo-600" />
+          Danh Sách Căn Hộ
         </h2>
         {userRole === "ADMIN" && (
           <button
@@ -104,22 +111,22 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
               setEditingApt(null);
               setIsModalOpen(true);
             }}
-            className="bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-600 shadow"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-indigo-700 shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2"
           >
-            + Thêm Căn Hộ
+            <HiPlus /> Thêm Căn Hộ
           </button>
         )}
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow mb-6 flex gap-4 flex-wrap">
+      <div className="bg-white p-4 rounded-lg shadow-sm mb-6 flex gap-4 flex-wrap">
         <input
-          className="flex-1 p-2 border rounded"
+          className="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
           placeholder="🔍 Tìm mã phòng, tên chủ..."
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
         />
         <select
-          className="flex-1 p-2 border rounded"
+          className="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >
@@ -129,52 +136,52 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredApts.map((apt) => (
           <div
             key={apt._id}
-            className={`bg-white rounded-xl p-5 shadow border-l-4 ${apt.status === "OCCUPIED" ? "border-emerald-500" : "border-gray-400"} hover:-translate-y-1 transition`}
+            className={`bg-white rounded-lg p-5 shadow-md border-l-4 ${apt.status === "OCCUPIED" ? "border-green-500" : "border-slate-400"} transform transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-indigo-500`}
           >
-            <div className="flex justify-between mb-2">
+            <div className="flex justify-between items-center mb-3">
               <span
-                className={`px-2 py-0.5 rounded text-xs font-bold ${apt.status === "OCCUPIED" ? "bg-emerald-100 text-emerald-700" : "bg-gray-100"}`}
+                className={`px-2 py-0.5 rounded text-xs font-bold ${apt.status === "OCCUPIED" ? "bg-green-100 text-green-800" : "bg-slate-100 text-slate-600"}`}
               >
                 {apt.status === "OCCUPIED" ? "Đã có người" : "Trống"}
               </span>
               {userRole === "ADMIN" && (
-                <div className="flex gap-1">
+                <div className="flex gap-1.5">
                   <button
                     onClick={() => {
                       setEditingApt(apt);
                       setIsModalOpen(true);
                     }}
-                    className="bg-amber-100 text-amber-600 px-2 rounded text-xs"
+                    className="bg-amber-100 text-amber-700 p-1.5 rounded-md hover:bg-amber-200 transition-all duration-200 transform hover:scale-110 active:scale-90"
                   >
-                    ✏️
+                    <HiPencil className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(apt._id, apt.code)}
-                    className="bg-red-100 text-red-600 px-2 rounded text-xs"
+                    className="bg-red-100 text-red-700 p-1.5 rounded-md hover:bg-red-200 transition-all duration-200 transform hover:scale-110 active:scale-90"
                   >
-                    🗑️
+                    <HiTrash className="h-4 w-4" />
                   </button>
                 </div>
               )}
             </div>
-            <h3 className="text-2xl font-bold text-indigo-600">{apt.code}</h3>
-            <div className="text-sm text-gray-500 mt-2 space-y-1">
-              <p className="flex justify-between border-b border-dashed pb-1">
-                <span>Vị trí:</span>{" "}
-                <b>
+            <h3 className="text-2xl font-bold text-slate-800">{apt.code}</h3>
+            <div className="text-sm text-slate-600 mt-3 space-y-2">
+              <p className="flex justify-between border-b border-dashed pb-1.5">
+                <span className="text-slate-500">Vị trí:</span>{" "}
+                <b className="text-slate-700">
                   {apt.block} - T{apt.floor}
                 </b>
               </p>
-              <p className="flex justify-between border-b border-dashed pb-1">
-                <span>Diện tích:</span> <b>{apt.area} m²</b>
+              <p className="flex justify-between border-b border-dashed pb-1.5">
+                <span className="text-slate-500">Diện tích:</span> <b className="text-slate-700">{apt.area} m²</b>
               </p>
               <p className="flex justify-between items-center">
-                <span>Chủ hộ:</span>{" "}
-                <span className="text-indigo-600 font-bold">
+                <span className="text-slate-500">Chủ hộ:</span>{" "}
+                <span className="text-indigo-700 font-bold">
                   {apt.owner ? apt.owner.fullname : "---"}
                 </span>
               </p>

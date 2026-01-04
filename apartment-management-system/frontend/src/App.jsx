@@ -6,7 +6,7 @@ import FeeManagement from "./components/sections/FeeManagement";
 import FeedbackManagement from "./components/sections/FeedbackManagement";
 import ResidentManagement from "./components/sections/ResidentManagement"; // Import mục Cư dân
 import Settings from "./components/sections/Settings"; // Import mục Cài đặt
-import Toast from "./components/Toast";
+import Alert from "./components/Alert";
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -14,7 +14,7 @@ function App() {
   const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
 
   const [activeSection, setActiveSection] = useState("apartment");
-  const [toast, setToast] = useState(null);
+  const [alert, setAlert] = useState(null);
 
   const handleLogin = (data) => {
     localStorage.setItem("token", data.token);
@@ -32,7 +32,7 @@ function App() {
     window.location.reload();
   };
 
-  const showToast = (message, type = "info") => setToast({ message, type });
+  const showAlert = (message, type = "info") => setAlert({ message, type });
 
   const renderSection = () => {
     switch (activeSection) {
@@ -41,14 +41,14 @@ function App() {
           <ApartmentManagement
             token={token}
             userRole={role}
-            showToast={showToast}
+            showToast={showAlert}
           />
         );
       case "resident":
-        return <ResidentManagement token={token} showToast={showToast} />; // Render mục Cư dân
+        return <ResidentManagement token={token} showToast={showAlert} />; // Render mục Cư dân
       case "fee":
         return (
-          <FeeManagement token={token} userRole={role} showToast={showToast} />
+          <FeeManagement token={token} userRole={role} showToast={showAlert} />
         );
       case "feedback":
         return (
@@ -56,11 +56,11 @@ function App() {
             token={token}
             userRole={role}
             currentUserId={userId}
-            showToast={showToast}
+            showToast={showAlert}
           />
         );
       case "settings":
-        return <Settings token={token} showToast={showToast} />; // Render mục Cài đặt
+        return <Settings token={token} showToast={showAlert} />; // Render mục Cài đặt
       default:
         return null;
     }
@@ -69,12 +69,12 @@ function App() {
   if (!token)
     return (
       <div className="app-overlay flex items-center justify-center">
-        <Login onLogin={handleLogin} showToast={showToast} />
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
+        <Login onLogin={handleLogin} showToast={showAlert} />
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
           />
         )}
       </div>
@@ -90,15 +90,16 @@ function App() {
         userRole={role}
       />
 
-      <main className="max-w-7xl mx-auto p-6">{renderSection()}</main>
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      <main className="max-w-7xl mx-auto p-6">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+        {renderSection()}
+      </main>
     </div>
   );
 }
