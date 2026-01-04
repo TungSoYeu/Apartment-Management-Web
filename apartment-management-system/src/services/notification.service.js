@@ -1,7 +1,22 @@
-class NotificationService {
-  sendNotification(user, message) {
-    console.log(`Sending notification to ${user.email}: ${message}`);
-  }
-}
+const Notification = require('../models/Notification');
 
-module.exports = new NotificationService();
+const createNotification = async (notificationBody) => {
+  const notification = await Notification.create(notificationBody);
+  return notification;
+};
+
+const getNotifications = async () => {
+  const notifications = await Notification.find();
+  return notifications;
+};
+
+const deleteNotification = async (id) => {
+  const notification = await Notification.findByIdAndDelete(id);
+  return notification;
+};
+
+module.exports = {
+  createNotification,
+  getNotifications,
+  deleteNotification,
+};

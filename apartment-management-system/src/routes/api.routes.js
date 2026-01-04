@@ -31,4 +31,10 @@ router.post(
 router.post("/bills/:id/pay", protect, billCtrl.payBill);
 router.get("/bills", protect, billCtrl.findAll);
 
+const notificationRoutes = require('./notification.routes');
+const feedbackRoutes = require('./feedback.routes');
+
+router.use('/notifications', notificationRoutes);
+router.use('/feedback', feedbackRoutes);
+
 module.exports = router;

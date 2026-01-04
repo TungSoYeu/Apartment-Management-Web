@@ -15,6 +15,7 @@ const app = express();
 // 3. Cấu hình Middleware (Quan trọng)
 app.use(cors()); // <--- DÒNG NÀY SỬA LỖI KHÔNG HIỆN PHÒNG
 app.use(express.json()); // Cho phép Server hiểu dữ liệu JSON gửi lên
+app.use(express.static('src'));
 
 // 4. Định nghĩa đường dẫn API
 // Mọi request bắt đầu bằng /api/v1 sẽ chạy vào file api.routes.js
