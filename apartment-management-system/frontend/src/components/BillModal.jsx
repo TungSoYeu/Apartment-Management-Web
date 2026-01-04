@@ -68,7 +68,7 @@ const BillModal = ({ isOpen, onClose, bill }) => {
 
           <div className="flex justify-center mt-4">
             <img
-              src={bill.qrCode}
+              src="/QR.jpg"
               alt="QR Code"
               className="w-48 h-48 object-contain border rounded-lg"
             />

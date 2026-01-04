@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  /* Cấu hình hình nền */
+  background-image: url("/bg.jpg"); /* Đảm bảo file ảnh nằm trong thư mục public */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Lớp phủ mờ để dễ đọc chữ trên nền ảnh */
+.app-overlay {
+  background-color: transparent;
+  min-height: 100vh;
+}
