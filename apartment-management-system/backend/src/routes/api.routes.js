@@ -1,13 +1,26 @@
 const express = require("express");
 const router = express.Router();
 const { protect, authorize } = require("../middlewares/auth.middleware");
+
+// Import Controllers
 const userCtrl = require("../controllers/user.controller");
 const aptCtrl = require("../controllers/apartment.controller");
-const billCtrl = require("../controllers/bill.controller");
 
-// --- User ---
+// Import Routes con
+const billRoutes = require("./bill.routes");
+const notificationRoutes = require("./notification.routes");
+const feedbackRoutes = require("./feedback.routes");
+
+// =======================
+// 1. USER & RESIDENT ROUTES
+// =======================
 router.post("/users/login", userCtrl.login);
 router.post("/residents/register", userCtrl.register);
+
+// Đổi mật khẩu (Mới thêm)
+// Đảm bảo bạn đã thêm hàm changePassword vào user.controller.js
+router.post("/users/change-password", protect, userCtrl.changePassword);
+
 router.patch(
   "/residents/:id/approve",
   protect,
@@ -15,26 +28,25 @@ router.patch(
   userCtrl.approve,
 );
 router.put("/users/:id", protect, authorize("ADMIN"), userCtrl.update);
-// --- Apartment ---
+
+// =======================
+// 2. APARTMENT ROUTES
+// =======================
 router.get("/apartments", protect, aptCtrl.findAll);
 router.post("/apartments", protect, authorize("ADMIN"), aptCtrl.create);
 router.put("/apartments/:id", protect, authorize("ADMIN"), aptCtrl.update);
 router.delete("/apartments/:id", protect, authorize("ADMIN"), aptCtrl.delete);
 
-// --- Finance ---
-router.post(
-  "/bills/generate",
-  protect,
-  authorize("ADMIN", "ACCOUNTANT"),
-  billCtrl.generateBills,
-);
-router.post("/bills/:id/pay", protect, billCtrl.payBill);
-router.get("/bills", protect, billCtrl.findAll);
+// =======================
+// 3. FINANCE ROUTES (BILLS)
+// =======================
+// Sử dụng file route riêng đã tạo ở trên
+router.use("/bills", billRoutes);
 
-const notificationRoutes = require('./notification.routes');
-const feedbackRoutes = require('./feedback.routes');
-
-router.use('/notifications', notificationRoutes);
-router.use('/feedback', feedbackRoutes);
+// =======================
+// 4. OTHER ROUTES
+// =======================
+router.use("/notifications", notificationRoutes);
+router.use("/feedback", feedbackRoutes);
 
 module.exports = router;

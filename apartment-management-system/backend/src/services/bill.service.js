@@ -7,6 +7,7 @@ const { mockUploadFile } = require("../utils/mockUpload");
 const FEES = { SERVICE: 200000, WATER: 15000, ELEC: 3000 };
 
 class BillService {
+  // 1. Tạo hóa đơn hàng loạt
   async generateMonthlyBills(month, year) {
     const billingCycle = `${month}-${year}`;
     const apartments = await Apartment.find({
@@ -23,43 +24,35 @@ class BillService {
             return;
           }
 
+          // Mặc định tạo hóa đơn với chỉ số 0 để Admin nhập sau
           let total = 0;
           const services = [];
           const additionalCharges = [];
 
-          // Service charge
-          const serviceCharge = calculateAmount(apt.residents.length, FEES.SERVICE);
-          services.push({ name: "Service Fee", amount: serviceCharge });
+          // Phí dịch vụ cố định
+          const serviceCharge = calculateAmount(1, FEES.SERVICE); // Tính theo hộ hoặc theo người
+          services.push({ name: "Phí Dịch Vụ", amount: serviceCharge });
           total += serviceCharge;
 
-          // Water
-          const waterUsage = Math.floor(Math.random() * 50);
-          const waterAmount = calculateAmount(waterUsage, FEES.WATER);
-          const water = { usage: waterUsage, amount: waterAmount };
-          total += waterAmount;
-          
-          // Electricity
-          const electricityUsage = Math.floor(Math.random() * 200);
-          const electricityAmount = calculateAmount(electricityUsage, FEES.ELEC);
-          const electricity = { usage: electricityUsage, amount: electricityAmount };
-          total += electricityAmount;
+          // Điện - Nước (Mặc định 0)
+          const water = { usage: 0, amount: 0 };
+          const electricity = { usage: 0, amount: 0 };
 
-
-          const dueDate = new Date(year, month, 10);
+          const dueDate = new Date(year, month - 1, 10); // Lưu ý: Month trong Date bắt đầu từ 0
           const deadline = new Date(dueDate);
           deadline.setDate(dueDate.getDate() + 15);
 
-          const newBill = await Bill.create({
-            title: `Bill ${billingCycle}`,
+          await Bill.create({
+            title: `Hóa đơn tháng ${month}/${year}`,
             apartmentId: apt._id,
             billingCycle,
             dueDate,
             deadline,
             apartmentSnapshot: {
               code: apt.code,
-              ownerName: apt.owner?.fullname,
+              ownerName: apt.owner?.fullname || "Unknown",
               area: apt.area,
-              residents: apt.residents.length
+              residents: apt.residents.length,
             },
             services,
             water,
@@ -67,16 +60,86 @@ class BillService {
             additionalCharges,
             totalAmount: total,
             status: "UNPAID",
-            qrCode: mockUploadFile(`qr-code-${apt.code}-${billingCycle}.png`),
+            qrCode: mockUploadFile(`qr-${apt.code}-${billingCycle}.png`),
           });
+
           results.created++;
-          notificationService.sendNotification(apt.owner, `Your bill for ${billingCycle} has been generated.`);
+
+          if (apt.owner) {
+            notificationService.createNotification({
+              title: "Hóa đơn mới",
+              content: `Hóa đơn tháng ${month}/${year} đã được tạo.`,
+              // user: apt.owner._id // Nếu cần gửi riêng
+            });
+          }
         } catch (e) {
+          console.error("Lỗi tạo bill cho căn " + apt.code, e);
           results.skipped++;
         }
       }),
     );
     return results;
+  }
+
+  // 2. Lấy danh sách
+  async getAllBills(query, user) {
+    const { status, month, year } = query;
+    const filter = {};
+
+    // Nếu là Cư dân, chỉ xem của mình
+    if (user.role === "RESIDENT") {
+      const apartment = await Apartment.findOne({ owner: user._id });
+      if (apartment) {
+        filter.apartmentId = apartment._id;
+      } else {
+        return [];
+      }
+    }
+
+    if (status) filter.status = status;
+    if (month && year) filter.billingCycle = `${month}-${year}`;
+
+    return await Bill.find(filter).sort({ createdAt: -1 });
+  }
+
+  // 3. Cập nhật hóa đơn (Tính lại tiền)
+  async updateBill(id, data) {
+    const bill = await Bill.findById(id);
+    if (!bill) throw new Error("Không tìm thấy hóa đơn");
+
+    const { status, electricity, water } = data;
+
+    if (status) bill.status = status;
+
+    // Cập nhật điện
+    if (electricity && electricity.usage !== undefined) {
+      bill.electricity.usage = Number(electricity.usage);
+      bill.electricity.amount = bill.electricity.usage * FEES.ELEC;
+    }
+
+    // Cập nhật nước
+    if (water && water.usage !== undefined) {
+      bill.water.usage = Number(water.usage);
+      bill.water.amount = bill.water.usage * FEES.WATER;
+    }
+
+    // Tính lại Tổng tiền
+    const servicesTotal = bill.services.reduce(
+      (sum, item) => sum + item.amount,
+      0,
+    );
+    const chargesTotal = bill.additionalCharges.reduce(
+      (sum, item) => sum + item.amount,
+      0,
+    );
+
+    bill.totalAmount =
+      bill.electricity.amount +
+      bill.water.amount +
+      servicesTotal +
+      chargesTotal;
+
+    return await bill.save();
   }
 
   async processPayment(billId, paymentData) {
@@ -93,22 +156,6 @@ class BillService {
     if (!bill) throw new Error("Bill not found or already paid");
     return bill;
   }
-
-  async getAllBills(query, user) {
-    const { status, billingCycle } = query;
-    const filter = {};
-    if (user.role === 'RESIDENT') {
-      const apartment = await Apartment.findOne({ owner: user._id });
-      if (apartment) {
-        filter.apartmentId = apartment._id;
-      } else {
-        return [];
-      }
-    }
-    if (status) filter.status = status;
-    if (billingCycle) filter.billingCycle = billingCycle;
-
-    return await Bill.find(filter).sort({ createdAt: -1 });
-  }
 }
+
 module.exports = new BillService();

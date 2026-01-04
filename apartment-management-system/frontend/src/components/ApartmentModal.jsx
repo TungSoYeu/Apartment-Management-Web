@@ -190,6 +190,13 @@ const ApartmentModal = ({
                     className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                   <input
+                    name="ownerIdentityCard"
+                    value={formData.ownerIdentityCard}
+                    onChange={handleChange}
+                    placeholder="Số CCCD / CMND"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  />
+                  <input
                     name="ownerEmail"
                     value={formData.ownerEmail}
                     onChange={handleChange}

@@ -51,6 +51,7 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
     if (formData.status === "OCCUPIED" && formData.ownerEmail) {
       payload.ownerInfo = {
         fullname: formData.ownerFullname,
+        identityCard: formData.ownerIdentityCard,
         email: formData.ownerEmail,
         phone: formData.ownerPhone,
         password: "123456",

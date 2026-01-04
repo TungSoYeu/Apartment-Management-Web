@@ -40,6 +40,7 @@ class ApartmentService {
         fullname: ownerInfo.fullname,
         email: ownerInfo.email,
         phone: ownerInfo.phone,
+        identityCard: ownerInfo.identityCard || "",
         password: ownerInfo.password || "123456",
         role: "RESIDENT",
         isActive: true,
@@ -73,7 +74,7 @@ class ApartmentService {
   async getAllApartments(query, user) {
     const { block, floor, status } = query;
     const filter = {};
-    if (user.role === 'RESIDENT') {
+    if (user.role === "RESIDENT") {
       filter.owner = user._id;
     } else {
       if (block) filter.block = block;
@@ -85,7 +86,7 @@ class ApartmentService {
       .populate("owner", "fullname phone email")
       .lean();
 
-    if (user.role === 'ADMIN') {
+    if (user.role === "ADMIN") {
       return apartments;
     }
 
