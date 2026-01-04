@@ -396,3 +396,71 @@
     justify-content: space-between;
     align-items: center;
 }
+.feedback-menu-bar {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.feedback-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feedback-card {
+    background: var(--white);
+    border-left: 6px solid var(--info);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.feedback-card h3 {
+    color: var(--primary);
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.feedback-card p {
+    margin: 0 0 10px 0;
+}
+
+textarea#admin-notification-content {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+textarea#resident-feedback-content, textarea[id^="edit-feedback-content"] {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.feedback-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-end; /* Align buttons to the right */
+}
+
+.feedback-actions button {
+    width: auto; /* Override default 100% width */
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+.edit-button {
+    background-color: var(--info);
+}

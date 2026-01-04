@@ -60,8 +60,8 @@
   
         <div class="filter-bar">
           <div class="filter-item">
-            <label>🔍 Tìm kiếm:</label
-            ><input
+            <label>🔍 Tìm kiếm:</label>
+            <input
               type="text"
               id="search-input"
               placeholder="Nhập mã phòng, tên chủ..."
@@ -90,7 +90,40 @@
       
       <div id="feedback-management-section" class="hidden">
         <h1>Thông báo và Phản hồi từ Cư dân</h1>
-      </div>
+        
+        <div class="menu-bar feedback-menu-bar">
+          <div class="menu-item active" onclick="showFeedbackSubSection('notifications-sub-section')">
+            Thông báo
+          </div>
+          <div class="menu-item" onclick="showFeedbackSubSection('send-notification-sub-section')">
+            Gửi Thông báo (Admin)
+          </div>
+          <div class="menu-item" onclick="showFeedbackSubSection('feedback-sub-section')">
+            Phản hồi Cư dân
+          </div>
+        </div>
+
+        <div id="notifications-sub-section">
+          <h2>🔔 Thông báo từ Ban Quản Lý</h2>
+          <div id="notification-list" class="feedback-list">
+            <!-- Notifications will be loaded here -->
+          </div>
+        </div>
+
+        <div id="send-notification-sub-section" class="hidden">
+          <h2>✉️ Gửi Thông báo Mới</h2>
+          <textarea id="admin-notification-content" placeholder="Nhập nội dung thông báo..." rows="5"></textarea>
+          <button onclick="sendNotification()">Gửi Thông báo</button>
+        </div>
+
+        <div id="feedback-sub-section" class="hidden">
+          <h2>💬 Phản hồi từ Cư dân</h2>
+          <textarea id="resident-feedback-content" placeholder="Nhập phản hồi của bạn..." rows="5"></textarea>
+          <button onclick="submitFeedback()">Gửi Phản hồi</button>
+          <div id="feedback-list" class="feedback-list">
+            <!-- Feedback will be loaded here -->
+          </div>
+        </div>
 
     </div>
     
@@ -99,7 +132,7 @@
             <span class="close-btn" onclick="closeModal('bill-modal')">&times;</span>
             <h2>Thanh toán hoá đơn</h2>
             <div id="bill-details"></div>
-            <img id="qr-code" src="" alt="QR Code" class="bill-modal-details-qr">
+            <img id="qr-code" src="\..\QR.jpg" alt="QR Code" class="bill-modal-details-qr">
         </div>
     </div>
 
@@ -116,8 +149,8 @@
           <input type="hidden" id="apt-id" />
 
           <div id="step-1">
-            <label>Mã căn hộ:</label
-            ><input
+            <label>Mã căn hộ:</label>
+            <input
               type="text"
               id="apt-code"
               placeholder="Ví dụ: B505"
@@ -125,16 +158,16 @@
             />
             <div class="form-row">
               <div class="form-group">
-                <label>Block:</label
-                ><input type="text" id="apt-block" required />
+                <label>Block:</label>
+                <input type="text" id="apt-block" required />
               </div>
               <div class="form-group">
-                <label>Tầng:</label
-                ><input type="number" id="apt-floor" required />
+                <label>Tầng:</label>
+                <input type="number" id="apt-floor" required />
               </div>
             </div>
-            <label>Diện tích (m2):</label
-            ><input type="number" id="apt-area" required />
+            <label>Diện tích (m2):</label>
+            <input type="number" id="apt-area" required />
             <label>Trạng thái:</label>
             <select id="apt-status" onchange="checkStatus()">
               <option value="VACANT">Trống</option>
@@ -179,8 +212,8 @@
                 <label>Số HĐ:</label><input type="text" id="contract-number" />
               </div>
               <div class="form-group">
-                <label>Tháng:</label
-                ><input type="number" id="contract-duration" value="12" />
+                <label>Tháng:</label>
+                <input type="number" id="contract-duration" value="12" />
               </div>
             </div>
             <label>Ngày ký:</label><input type="date" id="contract-date" />
@@ -220,6 +253,7 @@
       const API_URL = "http://127.0.0.1:3000/api/v1"; // Đảm bảo dùng IP này
       let token = localStorage.getItem("token");
       let userRole = localStorage.getItem("role");
+      let currentUserId = localStorage.getItem("userId"); // Assuming user ID is stored in localStorage
       let allApartments = [];
       let allBills = [];
       let isEditing = false;
@@ -236,6 +270,21 @@
         }, 3000);
       }
 
+      function showDashboard() {
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("dashboard-section").style.display = "block";
+
+        // Xử lý hiển thị nút Thêm an toàn
+        if (userRole === "ADMIN") {
+          const btn = document.getElementById("btn-create-apt");
+          if (btn) btn.style.display = "block";
+          document.querySelector('.feedback-menu-bar .menu-item[onclick="showFeedbackSubSection(\'send-notification-sub-section\')"]').style.display = 'block';
+        } else {
+            document.querySelector('.feedback-menu-bar .menu-item[onclick="showFeedbackSubSection(\'send-notification-sub-section\')"]').style.display = 'none';
+        }
+        showSection('apartment-management'); // Show apartment management by default
+      }
+
       async function showSection(sectionId) {
         document.getElementById('apartment-management-section').style.display = 'none';
         document.getElementById('fee-management-section').style.display = 'none';
@@ -250,6 +299,248 @@
 
         if (sectionId === 'fee-management') {
           await loadBills();
+        } else if (sectionId === 'feedback-management') {
+          showFeedbackSubSection('notifications-sub-section'); // Default to notifications
+        } else if (sectionId === 'apartment-management') {
+          await loadApartments();
+        }
+      }
+
+      function showFeedbackSubSection(subSectionId) {
+        document.getElementById('notifications-sub-section').classList.add('hidden');
+        document.getElementById('send-notification-sub-section').classList.add('hidden');
+        document.getElementById('feedback-sub-section').classList.add('hidden');
+
+        document.getElementById(subSectionId).classList.remove('hidden');
+
+        const menuItems = document.querySelectorAll('.feedback-menu-bar .menu-item');
+        menuItems.forEach(item => item.classList.remove('active'));
+
+        document.querySelector(`.feedback-menu-bar .menu-item[onclick="showFeedbackSubSection('${subSectionId}')"]`).classList.add('active');
+        
+        // Hide feedback submission for admins
+        const residentFeedbackTextarea = document.getElementById('resident-feedback-content');
+        const submitFeedbackButton = document.querySelector('#feedback-sub-section button[onclick="submitFeedback()"]');
+        if (subSectionId === 'feedback-sub-section' && userRole === 'ADMIN') {
+            residentFeedbackTextarea.style.display = 'none';
+            submitFeedbackButton.style.display = 'none';
+        } else if (subSectionId === 'feedback-sub-section') {
+            residentFeedbackTextarea.style.display = 'block';
+            submitFeedbackButton.style.display = 'block';
+        }
+
+        if (subSectionId === 'notifications-sub-section') {
+          loadNotifications();
+        } else if (subSectionId === 'feedback-sub-section') {
+          loadFeedback();
+        }
+      }
+
+      async function loadNotifications() {
+        const notificationList = document.getElementById('notification-list');
+        notificationList.innerHTML = '<p>Đang tải thông báo...</p>';
+        try {
+          const res = await fetch(`${API_URL}/notifications`, { headers: { Authorization: `Bearer ${token}` } });
+          const data = await res.json();
+          const notifications = data.data;
+
+          notificationList.innerHTML = '';
+          if (notifications.length === 0) {
+            notificationList.innerHTML = '<p>Chưa có thông báo nào.</p>';
+            return;
+          }
+          notifications.forEach(notif => {
+            const deleteButton = userRole === 'ADMIN' ? `<button class="button-danger delete-button" onclick="deleteNotification('${notif._id}')">Xóa</button>` : '';
+            notificationList.innerHTML += `
+              <div class="card feedback-card">
+                <h3>${notif.title}</h3>
+                <p>${notif.content}</p>
+                <small>Ngày: ${new Date(notif.date).toLocaleDateString()}</small>
+                ${deleteButton}
+              </div>
+            `;
+          });
+        } catch (err) {
+          console.error(err);
+          notificationList.innerHTML = '<p class="error-message">Lỗi khi tải thông báo.</p>';
+        }
+      }
+
+      async function sendNotification() {
+        const content = document.getElementById('admin-notification-content').value;
+        if (!content) {
+          showNotification('Nội dung thông báo không được để trống!', 'error');
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/notifications`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ title: 'Thông báo từ BQL', content }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            showNotification('Thông báo đã được gửi thành công!', 'success');
+            document.getElementById('admin-notification-content').value = '';
+            showFeedbackSubSection('notifications-sub-section'); // Go back to view notifications
+          } else {
+            showNotification('Lỗi khi gửi thông báo.', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showNotification('Lỗi kết nối Server khi gửi thông báo!', 'error');
+        }
+      }
+
+      async function deleteNotification(id) {
+        showNotification('Bạn có chắc chắn muốn xóa thông báo này?');
+        try {
+          const res = await fetch(`${API_URL}/notifications/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            showNotification('Thông báo đã được xóa!', 'success');
+            loadNotifications();
+          } else {
+            showNotification('Lỗi khi xóa thông báo.', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showNotification('Lỗi kết nối Server khi xóa thông báo!', 'error');
+        }
+      }
+
+      async function loadFeedback() {
+        const feedbackList = document.getElementById('feedback-list');
+        feedbackList.innerHTML = '<p>Đang tải phản hồi...</p>';
+
+        // Ensure these are up-to-date
+        const localToken = localStorage.getItem("token");
+        const localUserRole = localStorage.getItem("role");
+        const localCurrentUserId = localStorage.getItem("userId");
+
+        try {
+          const res = await fetch(`${API_URL}/feedback`, { headers: { Authorization: `Bearer ${localToken}` } });
+          const data = await res.json();
+          const feedback = data.data;
+
+          const filteredFeedback = localUserRole === 'ADMIN' ? feedback : feedback.filter(fb => fb.user._id === localCurrentUserId);
+
+          feedbackList.innerHTML = '';
+          if (filteredFeedback.length === 0) {
+            feedbackList.innerHTML = '<p>Chưa có phản hồi nào.</p>';
+            return;
+          }
+          filteredFeedback.forEach(fb => {
+            const isOwner = fb.user._id === currentUserId;
+            const feedbackActions = (userRole === 'ADMIN' || isOwner) ? `
+              <div class="feedback-actions">
+                ${isOwner ? `<button class="button-info edit-button" onclick="editFeedback('${fb._id}', '${fb.content}')">Sửa</button>` : ''}
+                <button class="button-danger delete-button" onclick="deleteFeedback('${fb._id}')">Xóa</button>
+              </div>` : '';
+
+            feedbackList.innerHTML += `
+              <div class="card feedback-card" id="feedback-${fb._id}">
+                <h3>Phản hồi từ ${fb.user.fullname}</h3>
+                <p class="feedback-content">${fb.content}</p>
+                <small>Ngày: ${new Date(fb.date).toLocaleDateString()}</small>
+                ${feedbackActions}
+              </div>
+            `;
+          });
+        } catch (err) {
+          console.error(err);
+          feedbackList.innerHTML = '<p class="error-message">Lỗi khi tải phản hồi.</p>';
+        }
+      }
+
+      function editFeedback(id, currentContent) {
+        const feedbackCard = document.getElementById(`feedback-${id}`);
+        const feedbackContent = feedbackCard.querySelector('.feedback-content');
+        
+        feedbackContent.innerHTML = `
+          <textarea id="edit-feedback-content-${id}" rows="3">${currentContent}</textarea>
+          <button class="button-success" onclick="updateFeedback('${id}')">Lưu</button>
+          <button class="button-secondary" onclick="loadFeedback()">Hủy</button>
+        `;
+      }
+
+      async function updateFeedback(id) {
+        const updatedContent = document.getElementById(`edit-feedback-content-${id}`).value;
+        if (!updatedContent) {
+          showNotification('Nội dung phản hồi không được để trống!', 'error');
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/feedback/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ content: updatedContent }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            showNotification('Phản hồi đã được cập nhật!', 'success');
+            loadFeedback();
+          } else {
+            showNotification('Lỗi khi cập nhật phản hồi.', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showNotification('Lỗi kết nối Server khi cập nhật phản hồi!', 'error');
+        }
+      }
+
+      async function submitFeedback() {
+        const content = document.getElementById('resident-feedback-content').value;
+        if (!content) {
+          showNotification('Nội dung phản hồi không được để trống!', 'error');
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/feedback`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ content }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            showNotification('Phản hồi đã được gửi thành công!', 'success');
+            document.getElementById('resident-feedback-content').value = '';
+            loadFeedback();
+          } else {
+            showNotification('Lỗi khi gửi phản hồi.', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showNotification('Lỗi kết nối Server khi gửi phản hồi!', 'error');
+        }
+      }
+
+      async function deleteFeedback(id) {
+        showNotification('Bạn có chắc chắn muốn xóa phản hồi này?');
+        try {
+          const res = await fetch(`${API_URL}/feedback/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            showNotification('Phản hồi đã được xóa!', 'success');
+            loadFeedback();
+          } else {
+            showNotification('Lỗi khi xóa phản hồi.', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showNotification('Lỗi kết nối Server khi xóa phản hồi!', 'error');
         }
       }
 
@@ -365,8 +656,10 @@
           if (data.success) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("role", data.user.role);
+            localStorage.setItem("userId", data.user._id); // Store user ID
             token = data.token;
             userRole = data.user.role;
+            currentUserId = data.user._id;
             showDashboard();
           } else showNotification(data.message, 'error');
         } catch (err) {
@@ -387,8 +680,11 @@
         if (userRole === "ADMIN") {
           const btn = document.getElementById("btn-create-apt");
           if (btn) btn.style.display = "block";
+          document.querySelector('.feedback-menu-bar .menu-item[onclick="showFeedbackSubSection(\'send-notification-sub-section\')"]').style.display = 'block';
+        } else {
+            document.querySelector('.feedback-menu-bar .menu-item[onclick="showFeedbackSubSection(\'send-notification-sub-section\')"]').style.display = 'none';
         }
-        loadApartments();
+        showSection('apartment-management'); // Show apartment management by default
       }
 
       async function loadApartments() {
@@ -558,34 +854,36 @@
             closeModal("aptModal");
             loadApartments();
           } else showNotification(data.message, 'error');
-        } catch (e) {
-          showNotification("Lỗi: " + e.message, 'error');
+          } catch (e) {
+            showNotification("Lỗi: " + e.message, 'error');
+          }
         }
-      }
-
-      function showOwnerInfo(data) {
-        document.getElementById("owner-personal-info").innerHTML =
-          `<div class="owner-info-personal"><strong>${data.name}</strong></div><div class="owner-info-contact">📧 ${data.email}</div><div class="owner-info-contact">📞 ${data.phone}</div>`;
-        const dateStr = data.cDate
-          ? new Date(data.cDate).toLocaleDateString("vi-VN")
-          : "---";
-        document.getElementById("owner-contract-info").innerHTML =
-          `<div class="owner-contract-info-row"><span>Số HĐ:</span><strong>${data.cNum}</strong></div><div class="owner-contract-info-row"><span>Ngày ký:</span><strong>${dateStr}</strong></div><div class="owner-contract-info-row"><span>Thời hạn:</span><strong>${data.cDur} tháng</strong></div>`;
-        document.getElementById("ownerModal").style.display = "flex";
-      }
-
-      function closeModal(id) {
-        document.getElementById(id).style.display = "none";
-      }
-      async function handleDelete(id, c) {
-        if (confirm(`Xóa ${c}?`)) {
-          await fetch(`${API_URL}/apartments/${id}`, {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          loadApartments();
+      
+        function showOwnerInfo(data) {
+          document.getElementById("owner-personal-info").innerHTML =
+            `<div class="owner-info-personal"><strong>${data.name}</strong></div><div class="owner-info-contact">📧 ${data.email}</div><div class="owner-info-contact">📞 ${data.phone}</div>`;
+          const dateStr = data.cDate
+            ? new Date(data.cDate).toLocaleDateString("vi-VN")
+            : "---";
+          document.getElementById("owner-contract-info").innerHTML =
+            `<div class="owner-contract-info-row"><span>Số HĐ:</span><strong>${data.cNum}</strong></div><div class="owner-contract-info-row"><span>Ngày ký:</span><strong>${dateStr}</strong></div><div class="owner-contract-info-row"><span>Thời hạn:</span><strong>${data.cDur} tháng</strong></div>`;
+          document.getElementById("ownerModal").style.display = "flex";
         }
-      }
-    </script>
+
+        function closeModal(id) {
+          document.getElementById(id).style.display = "none";
+        }
+              async function handleDelete(id, c) {
+                showNotification(`Xóa ${c}?`);
+                try {
+                  await fetch(`${API_URL}/apartments/${id}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
+                  loadApartments();
+                } catch (e) {
+                  showNotification("Lỗi: " + e.message, 'error');
+                }
+              }    </script>
   </body>
 </html>
