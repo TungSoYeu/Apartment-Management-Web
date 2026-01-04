@@ -22,6 +22,14 @@ router.put(
   billController.updateBill,
 );
 
+// [MỚI] Xóa hóa đơn (DELETE /api/v1/bills/:id) - Chỉ Admin/Kế toán
+router.delete(
+  "/:id",
+  protect,
+  authorize("ADMIN", "ACCOUNTANT"),
+  billController.deleteBill,
+);
+
 // Thanh toán nhanh (POST /api/v1/bills/:id/pay)
 router.post("/:id/pay", protect, billController.payBill);
 

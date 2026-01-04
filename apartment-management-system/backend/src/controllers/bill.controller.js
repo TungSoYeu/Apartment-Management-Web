@@ -20,7 +20,6 @@ exports.generateMonthlyBills = async (req, res) => {
 // 2. Lấy danh sách
 exports.getAllBills = async (req, res) => {
   try {
-    // req.query chứa month, year, status từ frontend gửi lên
     const bills = await billService.getAllBills(req.query, req.user);
     res.json({ success: true, data: bills });
   } catch (error) {
@@ -42,7 +41,17 @@ exports.updateBill = async (req, res) => {
   }
 };
 
-// 4. Thanh toán (Giữ nguyên hoặc gọi service)
+// 4. [MỚI] Xóa hóa đơn
+exports.deleteBill = async (req, res) => {
+  try {
+    await billService.deleteBill(req.params.id);
+    res.json({ success: true, message: "Đã xóa hóa đơn thành công!" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 5. Thanh toán
 exports.payBill = async (req, res) => {
   try {
     const bill = await billService.processPayment(req.params.id, req.body);

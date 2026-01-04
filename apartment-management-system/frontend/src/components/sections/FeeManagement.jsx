@@ -5,22 +5,19 @@ const FeeManagement = ({ token, userRole, showToast }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
   const [bills, setBills] = useState([]);
 
-  // State cho bộ lọc (Lịch sử giao dịch)
+  // Bộ lọc thời gian
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  const [viewBill, setViewBill] = useState(null); // Modal xem QR
-  const [editBill, setEditBill] = useState(null); // Modal sửa
+  const [viewBill, setViewBill] = useState(null);
+  const [editBill, setEditBill] = useState(null);
 
   useEffect(() => {
     loadBills();
   }, [selectedMonth, selectedYear]);
 
-  // Load bills theo tháng/năm đã chọn
   const loadBills = async () => {
     try {
-      // Backend cần hỗ trợ query string: ?month=...&year=...
-      // Nếu backend bạn chưa làm filter này, hãy sửa backend hàm getAllBills để nhận req.query
       const res = await fetch(
         `${API_URL}/bills?month=${selectedMonth}&year=${selectedYear}`,
         { headers: { Authorization: `Bearer ${token}` } },
@@ -44,10 +41,7 @@ const FeeManagement = ({ token, userRole, showToast }) => {
       });
       const data = await res.json();
       if (data.success) {
-        showToast(
-          `Đã tạo ${data.data.created} hóa đơn cho tháng ${selectedMonth}/${selectedYear}.`,
-          "success",
-        );
+        showToast(`Đã tạo ${data.data.created} hóa đơn mới.`, "success");
         loadBills();
       } else showToast(data.message, "error");
     } catch (e) {
@@ -55,7 +49,6 @@ const FeeManagement = ({ token, userRole, showToast }) => {
     }
   };
 
-  // Xử lý lưu sau khi sửa
   const handleUpdateBill = async (e) => {
     e.preventDefault();
     try {
@@ -73,12 +66,38 @@ const FeeManagement = ({ token, userRole, showToast }) => {
       });
       const data = await res.json();
       if (data.success) {
-        showToast("Cập nhật thành công!", "success");
+        showToast("Cập nhật & Tính tiền thành công!", "success");
         setEditBill(null);
         loadBills();
       } else showToast("Lỗi cập nhật", "error");
     } catch (err) {
       showToast("Lỗi server", "error");
+    }
+  };
+
+  // [MỚI] Hàm xóa hóa đơn
+  const handleDeleteBill = async (billId, code) => {
+    if (
+      !window.confirm(
+        `Bạn có chắc muốn XÓA hóa đơn căn ${code}? Hành động này không thể hoàn tác!`,
+      )
+    )
+      return;
+
+    try {
+      const res = await fetch(`${API_URL}/bills/${billId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Đã xóa hóa đơn thành công!", "success");
+        loadBills(); // Load lại danh sách
+      } else {
+        showToast(data.message || "Lỗi khi xóa", "error");
+      }
+    } catch (err) {
+      showToast("Lỗi kết nối server", "error");
     }
   };
 
@@ -90,18 +109,18 @@ const FeeManagement = ({ token, userRole, showToast }) => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm animate-fadeIn">
-      {/* Header & Bộ Lọc Lịch Sử */}
+      {/* Header */}
       <div className="flex flex-wrap justify-between items-center mb-6 border-b pb-4 gap-4">
-        <h2 className="text-2xl font-bold text-gray-800 uppercase">
+        <h2 className="text-2xl font-bold text-indigo-700 uppercase tracking-wide">
           💰 Quản Lý Thu Phí
         </h2>
 
-        <div className="flex gap-2 items-center">
-          <span className="font-bold text-gray-500">Kỳ thu:</span>
+        <div className="flex gap-2 items-center bg-gray-50 p-2 rounded-lg border border-gray-200">
+          <span className="font-bold text-gray-500 text-sm">Kỳ thu:</span>
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="p-2 border rounded font-bold"
+            className="p-1 border-none bg-transparent font-bold text-indigo-600 focus:ring-0 cursor-pointer"
           >
             {[...Array(12)].map((_, i) => (
               <option key={i} value={i + 1}>
@@ -112,9 +131,8 @@ const FeeManagement = ({ token, userRole, showToast }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="p-2 border rounded font-bold"
+            className="p-1 border-none bg-transparent font-bold text-indigo-600 focus:ring-0 cursor-pointer"
           >
-            <option value="2024">2024</option>
             <option value="2025">2025</option>
             <option value="2026">2026</option>
           </select>
@@ -122,7 +140,7 @@ const FeeManagement = ({ token, userRole, showToast }) => {
           {userRole === "ADMIN" && (
             <button
               onClick={generateBills}
-              className="ml-2 bg-emerald-600 text-white px-4 py-2 rounded font-medium hover:bg-emerald-700 shadow-sm"
+              className="ml-3 bg-emerald-500 text-white px-4 py-1.5 rounded font-bold hover:bg-emerald-600 shadow-sm text-sm transition"
             >
               + Tạo Hóa Đơn
             </button>
@@ -130,151 +148,202 @@ const FeeManagement = ({ token, userRole, showToast }) => {
         </div>
       </div>
 
-      {/* Danh sách hóa đơn */}
+      {/* Danh sách Bill */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {bills.map((bill) => (
           <div
             key={bill._id}
-            className={`bg-white rounded-xl shadow-sm border-l-4 ${bill.status === "PAID" ? "border-emerald-500" : "border-red-500"} p-5 hover:shadow-md transition relative group`}
+            className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group ${bill.status === "PAID" ? "border-l-4 border-l-emerald-500" : "border-l-4 border-l-red-500"}`}
           >
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="text-2xl font-bold text-gray-800">
-                {bill.apartmentSnapshot.code}
-              </h3>
-              <span
-                className={`text-xs font-bold px-2 py-1 rounded ${bill.status === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
-              >
-                {bill.status === "PAID" ? "Đã thanh toán" : "Chưa thanh toán"}
-              </span>
-            </div>
-            <p className="text-sm text-gray-500 mb-4">
-              {bill.apartmentSnapshot.ownerName}
-            </p>
-
-            <div className="flex justify-between items-center bg-gray-50 p-2 rounded mb-3">
-              <div className="text-xs text-gray-500">
-                <div>⚡ Điện: {bill.electricity.usage} số</div>
-                <div>💧 Nước: {bill.water.usage} m³</div>
-              </div>
-              <div className="text-xl font-bold text-indigo-700">
-                {formatMoney(bill.totalAmount)}
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => setViewBill(bill)}
-                className="flex-1 bg-blue-50 text-blue-600 py-2 rounded font-bold text-sm hover:bg-blue-100"
-              >
-                Xem QR
-              </button>
-              {userRole === "ADMIN" && (
-                <button
-                  onClick={() => setEditBill(bill)}
-                  className="flex-1 bg-amber-50 text-amber-600 py-2 rounded font-bold text-sm hover:bg-amber-100"
+            <div className="p-5">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-2xl font-bold text-gray-800">
+                  {bill.apartmentSnapshot.code}
+                </h3>
+                <span
+                  className={`text-[10px] font-extrabold uppercase px-2 py-1 rounded tracking-wider ${bill.status === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
                 >
-                  Sửa / Thu
+                  {bill.status === "PAID" ? "Đã Thanh Toán" : "Chưa Thanh Toán"}
+                </span>
+              </div>
+              <p className="text-sm text-gray-500 mb-4 font-medium">
+                {bill.apartmentSnapshot.ownerName}
+              </p>
+
+              <div className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>⚡ Điện ({bill.electricity.usage} số):</span>
+                  <span className="font-mono">
+                    {formatMoney(bill.electricity.amount)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>💧 Nước ({bill.water.usage} m³):</span>
+                  <span className="font-mono">
+                    {formatMoney(bill.water.amount)}
+                  </span>
+                </div>
+                <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center">
+                  <span className="text-xs font-bold text-gray-600">
+                    TỔNG CỘNG:
+                  </span>
+                  <span className="text-lg font-bold text-indigo-700">
+                    {formatMoney(bill.totalAmount)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-2 mt-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button
+                  onClick={() => setViewBill(bill)}
+                  className="flex-1 bg-white border border-gray-300 text-gray-600 py-2 rounded font-bold text-xs hover:bg-gray-50"
+                >
+                  QR
                 </button>
-              )}
+                {userRole === "ADMIN" && (
+                  <>
+                    <button
+                      onClick={() => setEditBill(bill)}
+                      className="flex-1 bg-indigo-600 text-white py-2 rounded font-bold text-xs hover:bg-indigo-700"
+                    >
+                      Sửa
+                    </button>
+                    {/* [MỚI] Nút Xóa */}
+                    <button
+                      onClick={() =>
+                        handleDeleteBill(bill._id, bill.apartmentSnapshot.code)
+                      }
+                      className="bg-red-50 text-red-600 border border-red-200 px-3 py-2 rounded font-bold text-xs hover:bg-red-100 hover:border-red-300"
+                      title="Xóa hóa đơn này"
+                    >
+                      ✕
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ))}
         {bills.length === 0 && (
-          <p className="col-span-full text-center text-gray-400 py-10">
-            Không có dữ liệu cho tháng này.
+          <p className="col-span-full text-center text-gray-400 py-12">
+            Chưa có hóa đơn nào cho tháng này.
           </p>
         )}
       </div>
 
-      {/* Modal Xem QR */}
+      {/* Modal Xem QR (Giữ nguyên) */}
       <BillModal
         isOpen={!!viewBill}
         onClose={() => setViewBill(null)}
         bill={viewBill}
       />
 
-      {/* Modal Sửa Hóa Đơn (Edit) */}
+      {/* Modal Sửa Hóa Đơn (Giữ nguyên) */}
       {editBill && (
-        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4 animate-fadeIn">
-          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden p-6">
-            <h2 className="text-xl font-bold mb-4 border-b pb-2">
-              Chỉnh Sửa Hóa Đơn ({editBill.apartmentSnapshot.code})
+        <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden p-6 relative">
+            <button
+              onClick={() => setEditBill(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-black"
+            >
+              &times;
+            </button>
+            <h2 className="text-xl font-bold mb-1 text-gray-800">
+              Cập Nhật Hóa Đơn
             </h2>
-            <form onSubmit={handleUpdateBill} className="space-y-4">
+            <p className="text-sm text-gray-500 mb-6">
+              Căn hộ:{" "}
+              <span className="font-bold text-indigo-600">
+                {editBill.apartmentSnapshot.code}
+              </span>
+            </p>
+
+            <form onSubmit={handleUpdateBill} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-gray-700">
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
                   Trạng thái thanh toán
                 </label>
                 <select
-                  className="w-full p-2 border rounded mt-1 outline-none"
+                  className="w-full p-2.5 border border-gray-300 rounded-lg font-bold text-gray-700 focus:ring-indigo-500 focus:border-indigo-500"
                   value={editBill.status}
                   onChange={(e) =>
                     setEditBill({ ...editBill, status: e.target.value })
                   }
                 >
-                  <option value="UNPAID">Chưa thanh toán</option>
-                  <option value="PAID">Đã thanh toán</option>
-                  <option value="OVERDUE">Quá hạn</option>
+                  <option value="UNPAID">🔴 Chưa thanh toán</option>
+                  <option value="PAID">🟢 Đã thanh toán</option>
                 </select>
               </div>
 
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-bold text-gray-700">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
                     Số Điện (kWh)
                   </label>
-                  <input
-                    type="number"
-                    className="w-full p-2 border rounded mt-1 outline-none"
-                    value={editBill.electricity.usage}
-                    onChange={(e) =>
-                      setEditBill({
-                        ...editBill,
-                        electricity: {
-                          ...editBill.electricity,
-                          usage: e.target.value,
-                        },
-                      })
-                    }
-                  />
-                  <small className="text-gray-400">x 3.000đ</small>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 pl-3"
+                      value={editBill.electricity.usage}
+                      onChange={(e) =>
+                        setEditBill({
+                          ...editBill,
+                          electricity: {
+                            ...editBill.electricity,
+                            usage: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                    <span className="absolute right-8 top-2.5 text-xs text-gray-400">
+                      x 5k
+                    </span>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <label className="block text-sm font-bold text-gray-700">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
                     Số Nước (m³)
                   </label>
-                  <input
-                    type="number"
-                    className="w-full p-2 border rounded mt-1 outline-none"
-                    value={editBill.water.usage}
-                    onChange={(e) =>
-                      setEditBill({
-                        ...editBill,
-                        water: { ...editBill.water, usage: e.target.value },
-                      })
-                    }
-                  />
-                  <small className="text-gray-400">x 15.000đ</small>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 pl-3"
+                      value={editBill.water.usage}
+                      onChange={(e) =>
+                        setEditBill({
+                          ...editBill,
+                          water: { ...editBill.water, usage: e.target.value },
+                        })
+                      }
+                    />
+                    <span className="absolute right-8 top-2.5 text-xs text-gray-400">
+                      x 15k
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-yellow-50 p-3 rounded text-sm text-yellow-800">
-                ℹ️ Tổng tiền sẽ được tự động tính lại sau khi lưu.
+              <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 flex gap-2">
+                <span className="text-yellow-600">ℹ️</span>
+                <p className="text-xs text-yellow-800 leading-5">
+                  Hệ thống sẽ tự động nhân đơn giá (Điện: 5.000đ, Nước: 15.000đ)
+                  và cộng phí dịch vụ khi bạn bấm Lưu.
+                </p>
               </div>
 
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setEditBill(null)}
-                  className="flex-1 py-2 bg-gray-100 rounded text-gray-600 font-bold"
+                  className="flex-1 py-2.5 bg-gray-100 rounded-lg text-gray-600 font-bold hover:bg-gray-200 transition"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-indigo-600 text-white rounded font-bold hover:bg-indigo-700"
+                  className="flex-1 py-2.5 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition"
                 >
-                  Lưu Thay Đổi
+                  Lưu & Tính Tiền
                 </button>
               </div>
             </form>

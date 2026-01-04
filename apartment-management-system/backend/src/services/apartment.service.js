@@ -8,12 +8,12 @@ class ApartmentService {
     return this.handleSave(data, "CREATE");
   }
 
-  // 2. CẬP NHẬT CĂN HỘ (Đã nâng cấp)
+  // 2. CẬP NHẬT CĂN HỘ
   async updateApartment(id, data) {
     return this.handleSave(data, "UPDATE", id);
   }
 
-  // --- HÀM XỬ LÝ CHUNG (Logic cốt lõi) ---
+  // --- HÀM XỬ LÝ CHUNG ---
   async handleSave(data, type, id = null) {
     const { code, block, floor, area, status, ownerInfo, contractInfo } = data;
 
@@ -25,28 +25,36 @@ class ApartmentService {
 
     let updatePayload = { code, block, floor, area, status };
 
-    // LOGIC: Nếu chuyển sang "Trống" -> Xóa chủ hộ và hợp đồng
+    // Nếu chuyển sang "Trống" -> Xóa chủ hộ
     if (status === "VACANT") {
       updatePayload.owner = null;
       updatePayload.contract = {};
     }
-    // LOGIC: Nếu chuyển sang "Có người" và có thông tin chủ mới -> Tạo User
+    // Nếu chuyển sang "Có người" và có thông tin chủ mới
     else if (status === "OCCUPIED" && ownerInfo) {
-      // Check email
-      const userExists = await User.findOne({ email: ownerInfo.email });
-      if (userExists) throw new Error(`Email ${ownerInfo.email} đã tồn tại!`);
+      // Check email tồn tại chưa
+      let user = await User.findOne({ email: ownerInfo.email });
 
-      const newUser = await User.create({
-        fullname: ownerInfo.fullname,
-        email: ownerInfo.email,
-        phone: ownerInfo.phone,
-        identityCard: ownerInfo.identityCard || "",
-        password: ownerInfo.password || "123456",
-        role: "RESIDENT",
-        isActive: true,
-      });
+      if (!user) {
+        // Tạo user mới nếu chưa có
+        user = await User.create({
+          fullname: ownerInfo.fullname,
+          email: ownerInfo.email,
+          phone: ownerInfo.phone,
+          identityCard: ownerInfo.identityCard || "", // Lưu CCCD
+          password: ownerInfo.password || "123456",
+          role: "RESIDENT",
+          isActive: true,
+        });
+      } else {
+        // Nếu user đã có, update lại thông tin CCCD nếu chưa có
+        if (ownerInfo.identityCard && !user.identityCard) {
+          user.identityCard = ownerInfo.identityCard;
+          await user.save();
+        }
+      }
 
-      updatePayload.owner = newUser._id;
+      updatePayload.owner = user._id;
       updatePayload.contract = contractInfo || {};
     }
 
@@ -70,7 +78,7 @@ class ApartmentService {
     }
   }
 
-  // ... (Giữ nguyên phần getAll và delete) ...
+  // --- LẤY DANH SÁCH (SỬA LỖI KHÔNG HIỆN CCCD TẠI ĐÂY) ---
   async getAllApartments(query, user) {
     const { block, floor, status } = query;
     const filter = {};
@@ -82,8 +90,9 @@ class ApartmentService {
       if (status) filter.status = status;
     }
 
+    // QUAN TRỌNG: Đã thêm 'identityCard' vào populate
     const apartments = await Apartment.find(filter)
-      .populate("owner", "fullname phone email")
+      .populate("owner", "fullname phone email identityCard")
       .lean();
 
     if (user.role === "ADMIN") {
