@@ -8,13 +8,17 @@ const BillSchema = new mongoose.Schema(
       ref: "Apartment",
       required: true,
     },
-    billingCycle: { type: String, required: true },
+    // --- THÊM 2 TRƯỜNG NÀY ĐỂ LỌC LỊCH SỬ ---
+    month: { type: Number, required: true },
+    year: { type: Number, required: true },
+
+    billingCycle: { type: String, required: true }, // Vẫn giữ để hiển thị (VD: "1-2026")
 
     apartmentSnapshot: {
       code: String,
       ownerName: String,
       area: Number,
-      residents: { type: Number, default: 1 }
+      residents: { type: Number, default: 1 },
     },
 
     services: [
@@ -57,6 +61,7 @@ const BillSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-BillSchema.index({ apartmentId: 1, billingCycle: 1 }, { unique: true });
+// Đảm bảo mỗi căn hộ chỉ có 1 bill trong 1 tháng/năm cụ thể
+BillSchema.index({ apartmentId: 1, month: 1, year: 1 }, { unique: true });
 
 module.exports = mongoose.model("Bill", BillSchema);

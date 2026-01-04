@@ -2,19 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font chữ mặc định sạch sẽ, hiện đại */
 body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  /* Cấu hình hình nền */
-  background-image: url("/bg.jpg"); /* Đảm bảo file ảnh nằm trong thư mục public */
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f3f4f6; /* Màu nền xám nhẹ chuẩn Dashboard */
+  color: #1f2937; /* Màu chữ xám đen dễ đọc */
 }
 
-/* Lớp phủ mờ để dễ đọc chữ trên nền ảnh */
+/* Hiệu ứng nền */
 .app-overlay {
-  background-color: transparent;
   min-height: 100vh;
+  /* Nếu bạn dùng ảnh nền, bỏ comment dòng dưới */
+  /* background-image: url('/bg.jpg'); background-size: cover; background-attachment: fixed; */
+}
+
+/* Đồng bộ các thẻ Input */
+input,
+select,
+textarea {
+  @apply border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
 }
