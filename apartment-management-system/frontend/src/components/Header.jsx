@@ -1,10 +1,19 @@
+import {
+  HiBuildingOffice,
+  HiUsers,
+  HiCreditCard,
+  HiChatBubbleLeftRight,
+  HiCog,
+  HiArrowLeftOnRectangle,
+} from "react-icons/hi2";
+
 const Header = ({ activeSection, onNavigate, onLogout, userRole }) => {
   const menuItems = [
-    { id: "apartment", label: "Căn hộ" },
-    { id: "resident", label: "Cư dân" }, // Mục mới
-    { id: "fee", label: "Thu phí" },
-    { id: "feedback", label: "Phản hồi" },
-    { id: "settings", label: "Cài đặt" }, // Mục mới
+    { id: "apartment", label: "Căn hộ", icon: <HiBuildingOffice /> },
+    { id: "resident", label: "Cư dân", icon: <HiUsers /> },
+    { id: "fee", label: "Thu phí", icon: <HiCreditCard /> },
+    { id: "feedback", label: "Phản hồi", icon: <HiChatBubbleLeftRight /> },
+    { id: "settings", label: "Cài đặt", icon: <HiCog /> },
   ];
 
   return (
@@ -28,12 +37,13 @@ const Header = ({ activeSection, onNavigate, onLogout, userRole }) => {
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   activeSection === item.id
                     ? "bg-indigo-100 text-indigo-700"
                     : "text-gray-600 hover:bg-gray-50 hover:text-indigo-600"
                 }`}
               >
+                {item.icon}
                 {item.label}
               </button>
             ))}
@@ -42,8 +52,9 @@ const Header = ({ activeSection, onNavigate, onLogout, userRole }) => {
           {/* Logout Button */}
           <button
             onClick={onLogout}
-            className="ml-4 px-4 py-2 border border-red-500 text-red-500 rounded text-sm font-bold hover:bg-red-50 transition"
+            className="ml-4 px-4 py-2 border border-red-500 text-red-500 rounded text-sm font-bold hover:bg-red-50 transition flex items-center gap-2"
           >
+            <HiArrowLeftOnRectangle />
             Đăng xuất
           </button>
         </div>

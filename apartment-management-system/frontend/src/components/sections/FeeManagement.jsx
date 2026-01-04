@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
 import BillModal from "../BillModal";
+import {
+  HiCurrencyDollar,
+  HiPlus,
+  HiXMark,
+  HiInformationCircle,
+  HiCheckCircle,
+  HiExclamationCircle,
+} from "react-icons/hi2";
+import { BsLightningFill, BsDropletFill } from "react-icons/bs";
 
 const FeeManagement = ({ token, userRole, showToast }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
@@ -111,8 +120,8 @@ const FeeManagement = ({ token, userRole, showToast }) => {
     <div className="bg-white p-6 rounded-lg shadow-sm animate-fadeIn">
       {/* Header */}
       <div className="flex flex-wrap justify-between items-center mb-6 border-b pb-4 gap-4">
-        <h2 className="text-2xl font-bold text-indigo-700 uppercase tracking-wide">
-          💰 Quản Lý Thu Phí
+        <h2 className="text-2xl font-bold text-indigo-700 uppercase tracking-wide flex items-center gap-2">
+          <HiCurrencyDollar /> Quản Lý Thu Phí
         </h2>
 
         <div className="flex gap-2 items-center bg-gray-50 p-2 rounded-lg border border-gray-200">
@@ -140,9 +149,9 @@ const FeeManagement = ({ token, userRole, showToast }) => {
           {userRole === "ADMIN" && (
             <button
               onClick={generateBills}
-              className="ml-3 bg-emerald-500 text-white px-4 py-1.5 rounded font-bold hover:bg-emerald-600 shadow-sm text-sm transition"
+              className="ml-3 bg-emerald-500 text-white px-4 py-1.5 rounded font-bold hover:bg-emerald-600 shadow-sm text-sm transition flex items-center gap-2"
             >
-              + Tạo Hóa Đơn
+              <HiPlus /> Tạo Hóa Đơn
             </button>
           )}
         </div>
@@ -171,14 +180,14 @@ const FeeManagement = ({ token, userRole, showToast }) => {
               </p>
 
               <div className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>⚡ Điện ({bill.electricity.usage} số):</span>
+                <div className="flex justify-between text-xs text-gray-500 items-center">
+                  <span className="flex items-center gap-1"><BsLightningFill className="text-yellow-500" /> Điện ({bill.electricity.usage} số):</span>
                   <span className="font-mono">
                     {formatMoney(bill.electricity.amount)}
                   </span>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>💧 Nước ({bill.water.usage} m³):</span>
+                <div className="flex justify-between text-xs text-gray-500 items-center">
+                  <span className="flex items-center gap-1"><BsDropletFill className="text-blue-500" /> Nước ({bill.water.usage} m³):</span>
                   <span className="font-mono">
                     {formatMoney(bill.water.amount)}
                   </span>
@@ -213,10 +222,10 @@ const FeeManagement = ({ token, userRole, showToast }) => {
                       onClick={() =>
                         handleDeleteBill(bill._id, bill.apartmentSnapshot.code)
                       }
-                      className="bg-red-50 text-red-600 border border-red-200 px-3 py-2 rounded font-bold text-xs hover:bg-red-100 hover:border-red-300"
+                      className="bg-red-50 text-red-600 border border-red-200 px-2 py-2 rounded font-bold text-xs hover:bg-red-100 hover:border-red-300 flex items-center justify-center"
                       title="Xóa hóa đơn này"
                     >
-                      ✕
+                      <HiXMark />
                     </button>
                   </>
                 )}
@@ -246,7 +255,7 @@ const FeeManagement = ({ token, userRole, showToast }) => {
               onClick={() => setEditBill(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-black"
             >
-              &times;
+              <HiXMark />
             </button>
             <h2 className="text-xl font-bold mb-1 text-gray-800">
               Cập Nhật Hóa Đơn
@@ -270,8 +279,8 @@ const FeeManagement = ({ token, userRole, showToast }) => {
                     setEditBill({ ...editBill, status: e.target.value })
                   }
                 >
-                  <option value="UNPAID">🔴 Chưa thanh toán</option>
-                  <option value="PAID">🟢 Đã thanh toán</option>
+                  <option value="UNPAID">Chưa thanh toán</option>
+                  <option value="PAID">Đã thanh toán</option>
                 </select>
               </div>
 
@@ -324,7 +333,7 @@ const FeeManagement = ({ token, userRole, showToast }) => {
               </div>
 
               <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 flex gap-2">
-                <span className="text-yellow-600">ℹ️</span>
+                <span className="text-yellow-600"><HiInformationCircle /></span>
                 <p className="text-xs text-yellow-800 leading-5">
                   Hệ thống sẽ tự động nhân đơn giá (Điện: 5.000đ, Nước: 15.000đ)
                   và cộng phí dịch vụ khi bạn bấm Lưu.
