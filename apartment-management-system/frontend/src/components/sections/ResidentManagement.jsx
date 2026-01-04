@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ContractModal from "../ContractModal"; // Import Modal mới
+import { HiFolder, HiDocumentText } from "react-icons/hi2";
 
 const ResidentManagement = ({ token, showToast }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
@@ -29,8 +30,8 @@ const ResidentManagement = ({ token, showToast }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm animate-fadeIn">
       <div className="flex justify-between items-center mb-6 border-b pb-4">
-        <h2 className="text-2xl font-bold text-indigo-700 uppercase tracking-wide">
-          📂 Hồ Sơ Cư Dân
+        <h2 className="text-2xl font-bold text-indigo-700 uppercase tracking-wide flex items-center gap-2">
+          <HiFolder /> Hồ Sơ Cư Dân
         </h2>
         <span className="bg-indigo-50 text-indigo-700 px-4 py-1 rounded-full text-sm font-bold border border-indigo-100">
           Tổng số: {residents.length} hộ
@@ -86,7 +87,7 @@ const ResidentManagement = ({ token, showToast }) => {
                     onClick={() => setSelectedApt(apt)}
                     className="text-xs font-bold text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-1.5 rounded transition shadow-sm flex items-center gap-1"
                   >
-                    <span>📄</span> Xem HĐ
+                    <HiDocumentText /> Xem HĐ
                   </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">

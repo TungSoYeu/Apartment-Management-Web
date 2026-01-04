@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HiCog, HiLockClosed } from "react-icons/hi2";
 
 const Settings = ({ token, showToast }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
@@ -60,15 +61,15 @@ const Settings = ({ token, showToast }) => {
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-sm max-w-2xl mx-auto animate-fadeIn">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 uppercase tracking-wide border-b pb-2">
-        ⚙️ Cài Đặt Hệ Thống
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 uppercase tracking-wide border-b pb-2 flex items-center gap-2">
+        <HiCog /> Cài Đặt Hệ Thống
       </h2>
 
       <div className="space-y-8">
         {/* Form Đổi Mật Khẩu */}
         <div>
           <h3 className="text-lg font-bold text-indigo-700 mb-4 flex items-center gap-2">
-            🔐 Đổi Mật Khẩu
+            <HiLockClosed /> Đổi Mật Khẩu
           </h3>
 
           <form onSubmit={handleChangePassword} className="space-y-5">

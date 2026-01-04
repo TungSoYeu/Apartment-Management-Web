@@ -8,7 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f3f4f6; /* Màu nền xám nhẹ chuẩn Dashboard */
-  color: #1f2937; /* Màu chữ xám đen dễ đọc */
+  color: #ffffff; /* Màu chữ trắng để nổi bật trên nền */
 }
 
 /* Hiệu ứng nền */

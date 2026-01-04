@@ -1,4 +1,10 @@
 import { useState, useEffect } from "react";
+import {
+  HiBuildingOffice2,
+  HiTrash,
+  HiPencil,
+  HiPlus,
+} from "react-icons/hi2";
 import ApartmentModal from "../ApartmentModal";
 
 const ApartmentManagement = ({ token, userRole, showToast }) => {
@@ -95,8 +101,8 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6 border-b pb-4">
-        <h2 className="text-2xl font-bold text-indigo-700">
-          🏢 Danh Sách Căn Hộ
+        <h2 className="text-2xl font-bold text-indigo-700 flex items-center gap-2">
+          <HiBuildingOffice2 /> Danh Sách Căn Hộ
         </h2>
         {userRole === "ADMIN" && (
           <button
@@ -104,9 +110,9 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
               setEditingApt(null);
               setIsModalOpen(true);
             }}
-            className="bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-600 shadow"
+            className="bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-600 shadow flex items-center gap-2"
           >
-            + Thêm Căn Hộ
+            <HiPlus /> Thêm Căn Hộ
           </button>
         )}
       </div>
@@ -148,15 +154,15 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
                       setEditingApt(apt);
                       setIsModalOpen(true);
                     }}
-                    className="bg-amber-100 text-amber-600 px-2 rounded text-xs"
+                    className="bg-amber-100 text-amber-600 p-1 rounded hover:bg-amber-200"
                   >
-                    ✏️
+                    <HiPencil />
                   </button>
                   <button
                     onClick={() => handleDelete(apt._id, apt.code)}
-                    className="bg-red-100 text-red-600 px-2 rounded text-xs"
+                    className="bg-red-100 text-red-600 p-1 rounded hover:bg-red-200"
                   >
-                    🗑️
+                    <HiTrash />
                   </button>
                 </div>
               )}

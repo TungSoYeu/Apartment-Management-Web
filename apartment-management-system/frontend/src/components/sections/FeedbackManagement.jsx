@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+import {
+  HiChatBubbleLeftRight,
+  HiBell,
+  HiEnvelope,
+  HiPencilSquare,
+  HiPaperAirplane,
+} from "react-icons/hi2";
 
 const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
@@ -73,31 +80,31 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-indigo-700 mb-4">
-        💬 Thông báo & Phản hồi
+      <h2 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
+        <HiChatBubbleLeftRight /> Thông báo & Phản hồi
       </h2>
 
       {/* Sub-menu Tabs */}
       <div className="flex gap-2 mb-6 bg-white p-2 rounded-lg shadow w-fit">
         <button
           onClick={() => setActiveTab("notifications")}
-          className={`px-4 py-2 rounded ${activeTab === "notifications" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === "notifications" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
         >
-          🔔 Thông báo
+          <HiBell /> Thông báo
         </button>
         {userRole === "ADMIN" && (
           <button
             onClick={() => setActiveTab("send")}
-            className={`px-4 py-2 rounded ${activeTab === "send" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === "send" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
           >
-            ✉️ Gửi TB (Admin)
+            <HiEnvelope /> Gửi TB (Admin)
           </button>
         )}
         <button
           onClick={() => setActiveTab("feedback")}
-          className={`px-4 py-2 rounded ${activeTab === "feedback" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === "feedback" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
         >
-          📝 Phản hồi Cư dân
+          <HiPencilSquare /> Phản hồi Cư dân
         </button>
       </div>
 
@@ -121,9 +128,9 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
             ></textarea>
             <button
               onClick={handleSend}
-              className="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700"
+              className="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 flex items-center gap-2"
             >
-              Gửi Đi 🚀
+              Gửi Đi <HiPaperAirplane />
             </button>
           </div>
         )}
