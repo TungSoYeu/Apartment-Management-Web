@@ -10,16 +10,13 @@ const Settings = ({ token, showToast }) => {
   });
   const [loading, setLoading] = useState(false);
 
-  // Xử lý khi nhập liệu
   const handleChange = (e) => {
     setPassData({ ...passData, [e.target.name]: e.target.value });
   };
 
-  // Xử lý đổi mật khẩu
   const handleChangePassword = async (e) => {
     e.preventDefault();
 
-    // Validate cơ bản
     if (passData.newPassword.length < 6) {
       return showToast("Mật khẩu mới phải có ít nhất 6 ký tự!", "error");
     }
@@ -46,7 +43,6 @@ const Settings = ({ token, showToast }) => {
 
       if (data.success) {
         showToast("Đổi mật khẩu thành công!", "success");
-        // Reset form
         setPassData({ oldPassword: "", newPassword: "", confirmPassword: "" });
       } else {
         showToast(data.message || "Mật khẩu cũ không đúng", "error");
@@ -60,21 +56,20 @@ const Settings = ({ token, showToast }) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm max-w-2xl mx-auto animate-fadeIn">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 uppercase tracking-wide border-b pb-2 flex items-center gap-2">
-        <HiCog /> Cài Đặt Hệ Thống
+    <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200 max-w-2xl mx-auto animate-fadeIn">
+      <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-100 pb-4 flex items-center gap-3">
+        <HiCog className="text-indigo-600" /> Cài Đặt Hệ Thống
       </h2>
 
       <div className="space-y-8">
-        {/* Form Đổi Mật Khẩu */}
         <div>
-          <h3 className="text-lg font-bold text-indigo-700 mb-4 flex items-center gap-2">
-            <HiLockClosed /> Đổi Mật Khẩu
+          <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+            <HiLockClosed className="text-slate-400" /> Đổi Mật Khẩu
           </h3>
 
           <form onSubmit={handleChangePassword} className="space-y-5">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-slate-600 mb-1">
                 Mật khẩu hiện tại
               </label>
               <input
@@ -82,14 +77,13 @@ const Settings = ({ token, showToast }) => {
                 name="oldPassword"
                 value={passData.oldPassword}
                 onChange={handleChange}
-                placeholder="Nhập mật khẩu cũ..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                className="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-slate-600 mb-1">
                 Mật khẩu mới
               </label>
               <input
@@ -98,22 +92,17 @@ const Settings = ({ token, showToast }) => {
                 value={passData.newPassword}
                 onChange={handleChange}
                 placeholder="Nhập mật khẩu mới (min 6 ký tự)..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                className="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-slate-600 mb-1">
                 Xác nhận mật khẩu mới
               </label>
               <input
-                type="password"
-                name="confirmPassword"
-                value={passData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Nhập lại mật khẩu mới..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                className="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition"
                 required
               />
             </div>
@@ -121,8 +110,8 @@ const Settings = ({ token, showToast }) => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-lg font-bold text-white shadow-lg transition duration-200 
-                    ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200"}
+              className={`w-full py-3 mt-2 rounded-lg font-bold text-white shadow-lg transition-all duration-200 transform
+                    ${loading ? "bg-slate-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20 hover:shadow-indigo-500/30 hover:scale-105 active:scale-95"}
                   `}
             >
               {loading ? "Đang xử lý..." : "Cập Nhật Mật Khẩu"}

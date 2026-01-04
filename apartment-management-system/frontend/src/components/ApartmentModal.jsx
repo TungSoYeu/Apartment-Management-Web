@@ -120,13 +120,13 @@ const ApartmentModal = ({
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Block
+                      Khu
                     </label>
                     <input
                       name="block"
                       value={formData.block}
                       onChange={handleChange}
-                      placeholder="Block"
+                      placeholder="Khu"
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
                       required
                     />

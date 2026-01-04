@@ -29,22 +29,22 @@ const Login = ({ onLogin }) => {
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-xl shadow-lg w-96 border border-gray-200">
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
-          Admin Portal
+          Cổng Quản Trị
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
-            className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
           />
           <input
-            className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Mật khẩu"
           />
           <button className="bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">
             Đăng Nhập

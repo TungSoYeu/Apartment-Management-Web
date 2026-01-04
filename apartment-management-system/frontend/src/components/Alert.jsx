@@ -4,8 +4,18 @@ import {
   HiInformationCircle,
   HiXMark,
 } from "react-icons/hi2";
+import { useEffect } from "react"; // Ensure useEffect is imported
 
 const Alert = ({ message, type, onClose }) => {
+  useEffect(() => {
+    if (message) { // Only set timer if there's a message to display
+      const timer = setTimeout(() => {
+        onClose();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message, onClose]);
+
   if (!message) return null;
 
   const alertStyles = {
@@ -22,10 +32,10 @@ const Alert = ({ message, type, onClose }) => {
       icon: <HiXCircle className="h-5 w-5 text-red-500" />,
     },
     info: {
-      bgColor: "bg-blue-100",
-      borderColor: "border-blue-400",
-      textColor: "text-blue-700",
-      icon: <HiInformationCircle className="h-5 w-5 text-blue-500" />,
+      bgColor: "bg-indigo-100",
+      borderColor: "border-indigo-400",
+      textColor: "text-indigo-700",
+      icon: <HiInformationCircle className="h-5 w-5 text-indigo-500" />,
     },
   };
 
@@ -47,7 +57,7 @@ const Alert = ({ message, type, onClose }) => {
               type="button"
               className={`inline-flex rounded-md ${style.bgColor} p-1.5 ${style.textColor} hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50`}
             >
-              <span className="sr-only">Dismiss</span>
+              <span className="sr-only">Đóng</span>
               <HiXMark className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>

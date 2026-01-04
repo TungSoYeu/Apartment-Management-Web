@@ -5,8 +5,8 @@ import {
   HiPlus,
   HiXMark,
   HiInformationCircle,
-  HiCheckCircle,
-  HiExclamationCircle,
+  HiPencil,
+  HiQrCode,
 } from "react-icons/hi2";
 import { BsLightningFill, BsDropletFill } from "react-icons/bs";
 
@@ -14,7 +14,6 @@ const FeeManagement = ({ token, userRole, showToast }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
   const [bills, setBills] = useState([]);
 
-  // Bộ lọc thời gian
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -84,7 +83,6 @@ const FeeManagement = ({ token, userRole, showToast }) => {
     }
   };
 
-  // [MỚI] Hàm xóa hóa đơn
   const handleDeleteBill = async (billId, code) => {
     if (
       !window.confirm(
@@ -101,7 +99,7 @@ const FeeManagement = ({ token, userRole, showToast }) => {
       const data = await res.json();
       if (data.success) {
         showToast("Đã xóa hóa đơn thành công!", "success");
-        loadBills(); // Load lại danh sách
+        loadBills();
       } else {
         showToast(data.message || "Lỗi khi xóa", "error");
       }
@@ -117,15 +115,15 @@ const FeeManagement = ({ token, userRole, showToast }) => {
     }).format(amount);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm animate-fadeIn">
-      {/* Header */}
-      <div className="flex flex-wrap justify-between items-center mb-6 border-b pb-4 gap-4">
-        <h2 className="text-2xl font-bold text-indigo-700 uppercase tracking-wide flex items-center gap-2">
-          <HiCurrencyDollar /> Quản Lý Thu Phí
+    <div className="animate-fadeIn">
+      <div className="flex flex-wrap justify-between items-center mb-6 border-b border-slate-200 pb-4 gap-4">
+        <h2 className="text-2xl font-bold text-slate-200 flex items-center gap-3">
+          <HiCurrencyDollar className="text-indigo-600" />
+          Quản Lý Thu Phí
         </h2>
 
-        <div className="flex gap-2 items-center bg-gray-50 p-2 rounded-lg border border-gray-200">
-          <span className="font-bold text-gray-500 text-sm">Kỳ thu:</span>
+        <div className="flex gap-2 items-center bg-slate-50 p-2 rounded-lg border border-slate-200">
+          <span className="font-bold text-slate-500 text-sm">Kỳ thu:</span>
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
@@ -149,7 +147,7 @@ const FeeManagement = ({ token, userRole, showToast }) => {
           {userRole === "ADMIN" && (
             <button
               onClick={generateBills}
-              className="ml-3 bg-emerald-500 text-white px-4 py-1.5 rounded font-bold hover:bg-emerald-600 shadow-sm text-sm transition flex items-center gap-2"
+              className="ml-3 bg-indigo-600 text-white px-3 py-1.5 rounded-md font-bold hover:bg-indigo-700 shadow-sm text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2"
             >
               <HiPlus /> Tạo Hóa Đơn
             </button>
@@ -157,44 +155,43 @@ const FeeManagement = ({ token, userRole, showToast }) => {
         </div>
       </div>
 
-      {/* Danh sách Bill */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {bills.map((bill) => (
           <div
             key={bill._id}
-            className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group ${bill.status === "PAID" ? "border-l-4 border-l-emerald-500" : "border-l-4 border-l-red-500"}`}
+            className={`bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 group hover:shadow-xl hover:scale-[1.02] ${bill.status === "PAID" ? "border-l-4 border-green-500" : "border-l-4 border-red-500"}`}
           >
             <div className="p-5">
               <div className="flex justify-between items-start mb-2">
-                <h3 className="text-2xl font-bold text-gray-800">
+                <h3 className="text-2xl font-bold text-slate-800">
                   {bill.apartmentSnapshot.code}
                 </h3>
                 <span
-                  className={`text-[10px] font-extrabold uppercase px-2 py-1 rounded tracking-wider ${bill.status === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
+                  className={`text-[11px] font-bold uppercase px-2 py-1 rounded-full ${bill.status === "PAID" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
                 >
                   {bill.status === "PAID" ? "Đã Thanh Toán" : "Chưa Thanh Toán"}
                 </span>
               </div>
-              <p className="text-sm text-gray-500 mb-4 font-medium">
+              <p className="text-sm text-slate-500 mb-4 font-medium">
                 {bill.apartmentSnapshot.ownerName}
               </p>
 
-              <div className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
-                <div className="flex justify-between text-xs text-gray-500 items-center">
-                  <span className="flex items-center gap-1"><BsLightningFill className="text-yellow-500" /> Điện ({bill.electricity.usage} số):</span>
-                  <span className="font-mono">
+              <div className="bg-slate-50 p-3 rounded-lg mb-4 space-y-2">
+                <div className="flex justify-between text-xs text-slate-600 items-center">
+                  <span className="flex items-center gap-1.5"><BsLightningFill className="text-yellow-500" /> Điện ({bill.electricity.usage} số)</span>
+                  <span className="font-mono font-semibold text-slate-700">
                     {formatMoney(bill.electricity.amount)}
                   </span>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 items-center">
-                  <span className="flex items-center gap-1"><BsDropletFill className="text-blue-500" /> Nước ({bill.water.usage} m³):</span>
-                  <span className="font-mono">
+                <div className="flex justify-between text-xs text-slate-600 items-center">
+                  <span className="flex items-center gap-1.5"><BsDropletFill className="text-indigo-500" /> Nước ({bill.water.usage} m³)</span>
+                  <span className="font-mono font-semibold text-slate-700">
                     {formatMoney(bill.water.amount)}
                   </span>
                 </div>
-                <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center">
-                  <span className="text-xs font-bold text-gray-600">
-                    TỔNG CỘNG:
+                <div className="border-t border-slate-200 mt-2 pt-2 flex justify-between items-center">
+                  <span className="text-xs font-bold text-slate-500 uppercase">
+                    Tổng cộng
                   </span>
                   <span className="text-lg font-bold text-indigo-700">
                     {formatMoney(bill.totalAmount)}
@@ -202,27 +199,26 @@ const FeeManagement = ({ token, userRole, showToast }) => {
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="flex gap-2 mt-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button
                   onClick={() => setViewBill(bill)}
-                  className="flex-1 bg-white border border-gray-300 text-gray-600 py-2 rounded font-bold text-xs hover:bg-gray-50"
+                  className="flex-1 flex items-center justify-center gap-1 bg-white border border-slate-300 text-slate-600 py-2 rounded-md font-bold text-xs hover:bg-slate-50 transition-colors transform hover:scale-105 active:scale-95"
                 >
-                  QR
+                  <HiQrCode /> QR
                 </button>
                 {userRole === "ADMIN" && (
                   <>
                     <button
                       onClick={() => setEditBill(bill)}
-                      className="flex-1 bg-indigo-600 text-white py-2 rounded font-bold text-xs hover:bg-indigo-700"
+                      className="flex-1 flex items-center justify-center gap-1 bg-slate-700 text-white py-2 rounded-md font-bold text-xs hover:bg-slate-800 transition-colors transform hover:scale-105 active:scale-95"
                     >
-                      Sửa
+                      <HiPencil /> Sửa
                     </button>
-                    {/* [MỚI] Nút Xóa */}
                     <button
                       onClick={() =>
                         handleDeleteBill(bill._id, bill.apartmentSnapshot.code)
                       }
-                      className="bg-red-50 text-red-600 border border-red-200 px-2 py-2 rounded font-bold text-xs hover:bg-red-100 hover:border-red-300 flex items-center justify-center"
+                      className="bg-red-100 text-red-700 p-2 rounded-md font-bold text-xs hover:bg-red-200 transition-colors transform hover:scale-105 active:scale-95 flex items-center justify-center"
                       title="Xóa hóa đơn này"
                     >
                       <HiXMark />
@@ -234,33 +230,31 @@ const FeeManagement = ({ token, userRole, showToast }) => {
           </div>
         ))}
         {bills.length === 0 && (
-          <p className="col-span-full text-center text-gray-400 py-12">
+          <p className="col-span-full text-center text-slate-400 py-16">
             Chưa có hóa đơn nào cho tháng này.
           </p>
         )}
       </div>
 
-      {/* Modal Xem QR (Giữ nguyên) */}
       <BillModal
         isOpen={!!viewBill}
         onClose={() => setViewBill(null)}
         bill={viewBill}
       />
 
-      {/* Modal Sửa Hóa Đơn (Giữ nguyên) */}
       {editBill && (
-        <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50 p-4 animate-fadeIn">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4 animate-fadeIn">
           <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden p-6 relative">
             <button
               onClick={() => setEditBill(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-black"
+              className="absolute top-3 right-3 text-slate-400 hover:text-slate-800"
             >
-              <HiXMark />
+              <HiXMark className="h-6 w-6" />
             </button>
-            <h2 className="text-xl font-bold mb-1 text-gray-800">
+            <h2 className="text-xl font-bold mb-1 text-slate-800">
               Cập Nhật Hóa Đơn
             </h2>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-slate-500 mb-6">
               Căn hộ:{" "}
               <span className="font-bold text-indigo-600">
                 {editBill.apartmentSnapshot.code}
@@ -269,11 +263,11 @@ const FeeManagement = ({ token, userRole, showToast }) => {
 
             <form onSubmit={handleUpdateBill} className="space-y-5">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
-                  Trạng thái thanh toán
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  Trạng thái
                 </label>
                 <select
-                  className="w-full p-2.5 border border-gray-300 rounded-lg font-bold text-gray-700 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full p-2.5 border border-slate-300 rounded-lg font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
                   value={editBill.status}
                   onChange={(e) =>
                     setEditBill({ ...editBill, status: e.target.value })
@@ -286,57 +280,46 @@ const FeeManagement = ({ token, userRole, showToast }) => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
                     Số Điện (kWh)
                   </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 pl-3"
-                      value={editBill.electricity.usage}
-                      onChange={(e) =>
-                        setEditBill({
-                          ...editBill,
-                          electricity: {
-                            ...editBill.electricity,
-                            usage: e.target.value,
-                          },
-                        })
-                      }
-                    />
-                    <span className="absolute right-8 top-2.5 text-xs text-gray-400">
-                      x 5k
-                    </span>
-                  </div>
+                  <input
+                    type="number"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                    value={editBill.electricity.usage}
+                    onChange={(e) =>
+                      setEditBill({
+                        ...editBill,
+                        electricity: {
+                          ...editBill.electricity,
+                          usage: e.target.value,
+                        },
+                      })
+                    }
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
                     Số Nước (m³)
                   </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 pl-3"
-                      value={editBill.water.usage}
-                      onChange={(e) =>
-                        setEditBill({
-                          ...editBill,
-                          water: { ...editBill.water, usage: e.target.value },
-                        })
-                      }
-                    />
-                    <span className="absolute right-8 top-2.5 text-xs text-gray-400">
-                      x 15k
-                    </span>
-                  </div>
+                   <input
+                    type="number"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                    value={editBill.water.usage}
+                    onChange={(e) =>
+                      setEditBill({
+                        ...editBill,
+                        water: { ...editBill.water, usage: e.target.value },
+                      })
+                    }
+                  />
                 </div>
               </div>
 
-              <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 flex gap-2">
-                <span className="text-yellow-600"><HiInformationCircle /></span>
-                <p className="text-xs text-yellow-800 leading-5">
-                  Hệ thống sẽ tự động nhân đơn giá (Điện: 5.000đ, Nước: 15.000đ)
-                  và cộng phí dịch vụ khi bạn bấm Lưu.
+              <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100 flex gap-3 items-center">
+                <HiInformationCircle className="text-indigo-500 h-5 w-5 flex-shrink-0" />
+                <p className="text-xs text-indigo-800 leading-5">
+                  Hệ thống sẽ tự động nhân đơn giá và cộng phí dịch vụ khi bạn bấm Lưu.
                 </p>
               </div>
 
@@ -344,13 +327,13 @@ const FeeManagement = ({ token, userRole, showToast }) => {
                 <button
                   type="button"
                   onClick={() => setEditBill(null)}
-                  className="flex-1 py-2.5 bg-gray-100 rounded-lg text-gray-600 font-bold hover:bg-gray-200 transition"
+                  className="flex-1 py-3 bg-slate-100 rounded-lg text-slate-600 font-bold hover:bg-slate-200 transition-colors transform active:scale-95"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition"
+                  className="flex-1 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 transition-all transform hover:scale-105 active:scale-95 hover:shadow-indigo-500/30"
                 >
                   Lưu & Tính Tiền
                 </button>

@@ -24,7 +24,6 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      // Nếu là feedback và không phải admin, chỉ hiện feedback của mình
       if (type === "feedback" && userRole !== "ADMIN") {
         setItems(data.data.filter((fb) => fb.user._id === currentUserId));
       } else {
@@ -78,49 +77,47 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
     }
   };
 
+  const tabBaseStyle = "flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200 font-semibold text-sm transform hover:scale-105 active:scale-95";
+  const activeTabStyle = "bg-white text-slate-800 shadow-sm";
+  const inactiveTabStyle = "text-slate-500 hover:bg-white/60";
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
-        <HiChatBubbleLeftRight /> Thông báo & Phản hồi
+    <div className="animate-fadeIn">
+      <h2 className="text-2xl font-bold text-slate-200 mb-4 flex items-center gap-3">
+        <HiChatBubbleLeftRight className="text-indigo-600" /> Thông báo & Phản hồi
       </h2>
 
-      {/* Sub-menu Tabs */}
-      <div className="flex gap-2 mb-6 bg-white p-2 rounded-lg shadow w-fit">
+      <div className="flex gap-1 mb-6 bg-slate-100 p-1 rounded-lg border border-slate-200 w-fit">
         <button
           onClick={() => setActiveTab("notifications")}
-          className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === "notifications" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+          className={`${tabBaseStyle} ${activeTab === "notifications" ? activeTabStyle : inactiveTabStyle}`}
         >
           <HiBell /> Thông báo
         </button>
         {userRole === "ADMIN" && (
           <button
             onClick={() => setActiveTab("send")}
-            className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === "send" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+            className={`${tabBaseStyle} ${activeTab === "send" ? activeTabStyle : inactiveTabStyle}`}
           >
             <HiEnvelope /> Gửi TB (Admin)
           </button>
         )}
         <button
           onClick={() => setActiveTab("feedback")}
-          className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === "feedback" ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+          className={`${tabBaseStyle} ${activeTab === "feedback" ? activeTabStyle : inactiveTabStyle}`}
         >
           <HiPencilSquare /> Phản hồi Cư dân
         </button>
       </div>
 
-      {/* Content Area */}
-      <div className="bg-white p-6 rounded-xl shadow min-h-[400px]">
-        {/* Tab: Gửi (Admin) hoặc Viết Phản hồi */}
-        {(activeTab === "send" ||
-          (activeTab === "feedback" && userRole !== "ADMIN")) && (
-          <div className="mb-8 border-b pb-6">
-            <h3 className="font-bold text-lg mb-2">
-              {activeTab === "send"
-                ? "Soạn Thông Báo Mới"
-                : "Gửi Phản Hồi cho BQL"}
+      <div className="bg-white p-6 rounded-lg shadow-sm min-h-[400px]">
+        {(activeTab === "send" || (activeTab === "feedback" && userRole !== "ADMIN")) && (
+          <div className="mb-8 border-b border-slate-200 pb-6">
+            <h3 className="font-bold text-lg mb-3 text-slate-700">
+              {activeTab === "send" ? "Soạn Thông Báo Mới" : "Gửi Phản Hồi cho BQL"}
             </h3>
             <textarea
-              className="w-full p-3 border rounded-lg mb-3 focus:ring-2 focus:ring-indigo-200 outline-none"
+              className="w-full p-3 border border-slate-300 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
               rows="4"
               placeholder="Nhập nội dung..."
               value={content}
@@ -128,33 +125,31 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
             ></textarea>
             <button
               onClick={handleSend}
-              className="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 flex items-center gap-2"
+              className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2 transition-colors transform active:scale-95"
             >
               Gửi Đi <HiPaperAirplane />
             </button>
           </div>
         )}
 
-        {/* Tab: Danh sách */}
         {activeTab !== "send" && (
-          <div className="space-y-4">
+          <div className="space-y-1">
             {items.length === 0 && (
-              <p className="text-gray-400 text-center">Trống.</p>
+              <p className="text-slate-400 text-center py-10">Trống.</p>
             )}
             {items.map((item) => (
               <div
                 key={item._id}
-                className="border p-4 rounded-lg hover:bg-gray-50 flex justify-between items-start"
+                className="border-b border-slate-100 p-4 flex justify-between items-start last:border-b-0 transform hover:scale-[1.005] hover:shadow-md transition-all duration-200"
               >
                 <div>
-                  <h4 className="font-bold text-indigo-700">
-                    {item.title ||
-                      `Phản hồi từ ${item.user?.fullname || "Ẩn danh"}`}
+                  <h4 className="font-bold text-slate-800">
+                    {item.title || `Phản hồi từ ${item.user?.fullname || "Ẩn danh"}`}
                   </h4>
-                  <p className="text-gray-700 mt-1 whitespace-pre-wrap">
+                  <p className="text-slate-600 mt-1 whitespace-pre-wrap">
                     {item.content}
                   </p>
-                  <small className="text-gray-400">
+                  <small className="text-slate-400 mt-2 block">
                     {new Date(item.date).toLocaleDateString()}
                   </small>
                 </div>
@@ -163,12 +158,10 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
                     onClick={() =>
                       handleDelete(
                         item._id,
-                        activeTab === "notifications"
-                          ? "notifications"
-                          : "feedback",
+                        activeTab === "notifications" ? "notifications" : "feedback",
                       )
                     }
-                    className="text-red-400 hover:text-red-600 text-sm font-bold ml-4"
+                    className="text-slate-400 hover:text-red-600 text-sm font-bold ml-4 transition-colors"
                   >
                     Xóa
                   </button>
