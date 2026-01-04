@@ -1,0 +1,398 @@
+/* --- CSS STYLES --- */
+      :root {
+        --primary: #4f46e5;
+        --bg: #f3f4f6;
+        --text: #1f2937;
+        --white: #ffffff;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --warning: #f59e0b;
+        --success: #10b981;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        color: var(--text);
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      button {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+
+      /* Layout */
+      #login-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .login-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 350px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      #dashboard-section {
+        display: none;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .filter-bar {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      .filter-item {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      /* Grid */
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
+      .card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        border-left: 6px solid #ccc;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+      }
+      .card.occupied {
+        border-left-color: var(--success);
+      }
+      .card.vacant {
+        border-left-color: #9ca3af;
+      }
+
+      /* Typography */
+      .card h3 {
+        margin: 0;
+        font-size: 2rem;
+        color: var(--primary);
+      }
+      .status-badge {
+        padding: 4px 10px;
+        border-radius: 15px;
+        background: #eee;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+      .card.occupied .status-badge {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px dashed #eee;
+        padding-bottom: 5px;
+        font-size: 0.95rem;
+        color: #555;
+      }
+      .owner-link {
+        color: var(--info);
+        cursor: pointer;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+
+      /* Modal & Wizard */
+      .modal {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 500px;
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .close-btn {
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+      }
+      .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+      .step-title {
+        font-weight: bold;
+        color: #ccc;
+      }
+      .step-title.active {
+        color: var(--primary);
+      }
+      .contract-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+      }
+      .section-title {
+        font-weight: bold;
+        color: var(--primary);
+        border-bottom: 1px solid #cbd5e1;
+        padding-bottom: 5px;
+        margin: 15px 0 10px 0;
+      }
+      .hidden {
+        display: none;
+      }
+      .menu-bar {
+        display: flex;
+        justify-content: center;
+        background-color: var(--white);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .menu-item {
+        padding: 10px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #555;
+        transition: 0.2s;
+        border-radius: 6px;
+      }
+      .menu-item:hover,
+      .menu-item.active {
+        background-color: var(--primary);
+        color: var(--white);
+      }
+      .bill-card {
+        background: var(--white);
+        border-radius: 10px;
+        padding: 20px;
+        border-left: 6px solid var(--info);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: 0.2s;
+      }
+      .bill-card:hover {
+        transform: translateY(-5px);
+      }
+      .bill-card.paid {
+        border-left-color: var(--success);
+      }
+      .bill-card.unpaid {
+        border-left-color: var(--danger);
+      }
+      .bill-card.overdue {
+        border-left-color: var(--warning);
+      }
+      .bill-card h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--primary);
+      }
+      .bill-card .price {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--text);
+        text-align: center;
+        margin: 10px 0;
+      }
+      .status-paid {
+        color: var(--success);
+        font-weight: bold;
+      }
+      .status-unpaid {
+        color: var(--danger);
+        font-weight: bold;
+      }
+      .status-overdue {
+        color: var(--warning);
+        font-weight: bold;
+      }
+      #notification-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 1001;
+        display: none;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: center;
+      }
+      #notification-box.success {
+        background-color: var(--success);
+        color: var(--white);
+      }
+      #notification-box.error {
+        background-color: var(--danger);
+        color: var(--white);
+      }
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    color: var(--primary);
+}
+
+.dashboard-header .button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.button-success {
+    background: var(--success);
+}
+
+.button-danger {
+    background: var(--danger);
+}
+.fee-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.fee-management-header h1 {
+    margin: 0;
+    color: var(--primary);
+}
+
+.fee-management-header .button-success {
+    width: auto;
+}
+.bill-modal-details img {
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto;
+    display: block;
+}
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.form-buttons .button-secondary {
+    background: #666;
+}
+.owner-modal-header {
+    font-weight: bold;
+    color: var(--primary);
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+.grid-empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+.card-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.card-actions .button-warning {
+    background: #f59e0b;
+    padding: 5px 10px;
+}
+
+.card-actions .button-danger {
+    background: #ef4444;
+    padding: 5px 10px;
+}
+.owner-info-personal {
+    margin-bottom: 5px;
+}
+
+.owner-info-personal strong {
+    font-weight: bold;
+}
+
+.owner-info-contact {
+    color: #666;
+}
+.button-save {
+    display: none;
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
