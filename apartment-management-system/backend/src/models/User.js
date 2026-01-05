@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const MemberSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  phone: { type: String, required: true },
+});
+
 const UserSchema = new mongoose.Schema(
   {
     fullname: { type: String, required: true },
@@ -18,6 +23,7 @@ const UserSchema = new mongoose.Schema(
       ref: "Apartment",
     },
     isActive: { type: Boolean, default: true },
+    members: [MemberSchema],
   },
   { timestamps: true },
 );

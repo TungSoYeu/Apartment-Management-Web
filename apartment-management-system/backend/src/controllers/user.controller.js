@@ -140,3 +140,88 @@ exports.changePassword = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// 6. Lấy tất cả user (Admin)
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).populate("currentApartment");
+    res.json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 7. Lấy user theo ID (Admin)
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate("currentApartment");
+    if (user) {
+      res.json({ success: true, data: user });
+    } else {
+      res.status(404).json({ success: false, message: "User không tồn tại" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+// 8. Thêm thành viên vào hộ gia đình
+exports.addMember = async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      user.members.push({ name, phone });
+      await user.save();
+      res.json({ success: true, message: "Thêm thành viên thành công", data: user });
+    } else {
+      res.status(404).json({ success: false, message: "User không tồn tại" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 9. Xóa thành viên khỏi hộ gia đình
+exports.removeMember = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      const member = user.members.id(req.params.memberId);
+      if (member) {
+        member.remove();
+        await user.save();
+        res.json({ success: true, message: "Xóa thành viên thành công", data: user });
+      } else {
+        res.status(404).json({ success: false, message: "Thành viên không tồn tại" });
+      }
+    } else {
+      res.status(404).json({ success: false, message: "User không tồn tại" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 10. Cập nhật thông tin thành viên
+exports.updateMember = async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      const member = user.members.id(req.params.memberId);
+      if (member) {
+        member.name = name || member.name;
+        member.phone = phone || member.phone;
+        await user.save();
+        res.json({ success: true, message: "Cập nhật thành viên thành công", data: user });
+      } else {
+        res.status(404).json({ success: false, message: "Thành viên không tồn tại" });
+      }
+    } else {
+      res.status(404).json({ success: false, message: "User không tồn tại" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

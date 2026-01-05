@@ -1,7 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors"); // Thư viện cho phép Web truy cập
-const connectDB = require("./config/db"); // Đường dẫn đến file kết nối DB
+const connectDB = require("./config/database"); // Đường dẫn đến file kết nối DB
 const apiRoutes = require("./routes/api.routes"); // Đường dẫn đến file quản lý Routes
 
 // 1. Nạp biến môi trường từ file .env
