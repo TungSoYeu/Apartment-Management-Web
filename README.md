@@ -1,30 +1,30 @@
-# Apartment Management System
+# Hệ thống Quản lý Căn hộ
 
-## Introduction
-This is a simple apartment management system built to support the management of apartment-related activities such as user, apartment, bill, feedback, and notification management.
+## Giới thiệu
+Đây là một hệ thống quản lý căn hộ đơn giản, được xây dựng để hỗ trợ quản lý các hoạt động liên quan đến căn hộ như quản lý người dùng, căn hộ, hóa đơn, phản hồi và thông báo.
 
-## Key Features
-*   **User Management:** Register, log in, approve residents, update user information.
-*   **Apartment Management:** View list, create, update, and delete apartments.
-*   **Bill Management:** Automatically generate bills, pay bills, and view a list of bills.
-*   **Feedback Management:** Create, view, update, and delete feedback from residents.
-*   **Notification Management:** Create, view, and delete important announcements.
-*   **Security:** User authentication (JWT) and authorization (Admin, Accountant, Resident).
+## Tính năng chính
+*   **Quản lý người dùng:** Đăng ký, đăng nhập, phê duyệt cư dân, cập nhật thông tin người dùng.
+*   **Quản lý căn hộ:** Xem danh sách, tạo mới, cập nhật, xóa căn hộ.
+*   **Quản lý hóa đơn:** Tạo hóa đơn tự động, thanh toán hóa đơn, xem danh sách hóa đơn.
+*   **Quản lý phản hồi:** Tạo, xem, cập nhật và xóa các phản hồi từ cư dân.
+*   **Quản lý thông báo:** Tạo, xem và xóa các thông báo quan trọng.
+*   **Bảo mật:** Xác thực người dùng (JWT) và phân quyền (Admin, Accountant, Resident).
 
-## Technologies Used
+## Công nghệ sử dụng
 ### Backend
 *   **Framework:** Node.js, Express.js
-*   **Database:** MongoDB (with Mongoose ODM)
-*   **Security:** `bcryptjs` (password hashing), `jsonwebtoken` (JWT authentication)
-*   **Environment:** `dotenv` (environment variable management)
-*   **Middleware:** `cors`, `helmet`, `morgan` (HTTP request logger)
+*   **Cơ sở dữ liệu:** MongoDB (với Mongoose ODM)
+*   **Bảo mật:** `bcryptjs` (băm mật khẩu), `jsonwebtoken` (xác thực JWT)
+*   **Môi trường:** `dotenv` (quản lý biến môi trường)
+*   **Middleware:** `cors`, `helmet`, `morgan` (ghi log HTTP)
 
 ### Frontend
-*   **Framework:** React (with Vite)
+*   **Framework:** React (với Vite)
 *   **Styling:** Tailwind CSS
 *   **UI Components:** `react-icons`
 
-## Project Structure
+## Cấu trúc dự án
 ```
 .
 ├── apartment-management-system/
@@ -50,24 +50,24 @@ This is a simple apartment management system built to support the management of 
 └── ...
 ```
 
-## Installation
-1.  **Clone the repository:**
+## Cài đặt
+1.  **Clone repository:**
     ```bash
-    git clone <YOUR_REPOSITORY_URL>
+    git clone <URL_REPOSITORY_CUA_BẠN>
     cd apartment-management-system
     ```
-2.  **Install backend dependencies:**
+2.  **Cài đặt các gói phụ thuộc cho backend:**
     ```bash
     cd backend
     npm install
     ```
-3.  **Install frontend dependencies:**
+3.  **Cài đặt các gói phụ thuộc cho frontend:**
     ```bash
     cd ../frontend
     npm install
     ```
-4.  **Create a .env file:**
-    In the `backend` directory, create a `.env` file and add the necessary environment variables. Here is an example:
+4.  **Tạo file .env:**
+    Trong thư mục `backend`, tạo một file `.env` và thêm các biến môi trường cần thiết. Dưới đây là một ví dụ:
     ```
     NODE_ENV=development
     PORT=3000
@@ -76,69 +76,68 @@ This is a simple apartment management system built to support the management of 
     JWT_EXPIRE=30d
     COOKIE_EXPIRE=30
     ```
-    *Note: Change `MONGO_URI` and `JWT_SECRET` to your own values.*
+    *Lưu ý: Thay đổi `MONGO_URI` và `JWT_SECRET` bằng giá trị của bạn.*
 
-## How to Run the Application
-### Development Mode
-1.  **Run the backend:**
+## Cách chạy ứng dụng
+### Chế độ phát triển (Development)
+1.  **Chạy backend:**
     ```bash
     cd backend
     npm run dev
     ```
-2.  **Run the frontend:**
+2.  **Chạy frontend:**
     ```bash
     cd frontend
     npm run dev
     ```
-The application will be running on `http://localhost:5173` (or the port configured in Vite). The backend will be running on `http://localhost:3000` (or the port you configured in `.env`).
+Ứng dụng sẽ chạy trên `http://localhost:5173` (hoặc cổng được cấu hình trong Vite). Backend sẽ chạy trên `http://localhost:3000` (hoặc cổng bạn đã cấu hình trong `.env`).
 
-### Production Mode
-1.  **Build the frontend:**
+### Chế độ sản phẩm (Production)
+1.  **Build frontend:**
     ```bash
     cd frontend
     npm run build
     ```
-2.  **Run the backend:**
+2.  **Chạy backend:**
     ```bash
     cd backend
     npm start
     ```
 
-## API Endpoints
-The main API routes are defined in `/backend/src/routes`.
+## Cấu trúc API
+Các tuyến API chính được định nghĩa trong `/backend/src/routes`.
 
-### User - `/api/v1/users`
-*   `POST /login`: Log in a user.
-*   `POST /residents/register`: Register a new resident.
-*   `PATCH /residents/:id/approve`: Approve a resident (requires ADMIN privileges).
-*   `PUT /:id`: Update user information (requires ADMIN privileges).
+### Người dùng (User) - `/api/v1/users`
+*   `POST /login`: Đăng nhập người dùng.
+*   `POST /residents/register`: Đăng ký cư dân mới.
+*   `PATCH /residents/:id/approve`: Phê duyệt cư dân (yêu cầu quyền ADMIN).
+*   `PUT /:id`: Cập nhật thông tin người dùng (yêu cầu quyền ADMIN).
 
-### Apartment - `/api/v1/apartments`
-*   `GET /`: Get all apartments (requires authentication).
-*   `POST /`: Create a new apartment (requires ADMIN privileges).
-*   `PUT /:id`: Update apartment information (requires ADMIN privileges).
-*   `DELETE /:id`: Delete an apartment (requires ADMIN privileges).
+### Căn hộ (Apartment) - `/api/v1/apartments`
+*   `GET /`: Lấy tất cả các căn hộ (yêu cầu xác thực).
+*   `POST /`: Tạo căn hộ mới (yêu cầu quyền ADMIN).
+*   `PUT /:id`: Cập nhật thông tin căn hộ (yêu cầu quyền ADMIN).
+*   `DELETE /:id`: Xóa căn hộ (yêu cầu quyền ADMIN).
 
-### Bill - `/api/v1/bills`
-*   `GET /`: Get all bills (requires authentication).
-*   `POST /generate`: Generate bills (requires ADMIN or ACCOUNTANT privileges).
-*   `POST /:id/pay`: Pay a bill (requires authentication).
-*   `DELETE /:id`: Delete a bill (requires ADMIN privileges).
+### Hóa đơn (Bill) - `/api/v1/bills`
+*   `GET /`: Lấy tất cả các hóa đơn (yêu cầu xác thực).
+*   `POST /generate`: Tạo hóa đơn (yêu cầu quyền ADMIN, ACCOUNTANT).
+*   `POST /:id/pay`: Thanh toán hóa đơn (yêu cầu xác thực).
+*   `DELETE /:id`: Xóa hóa đơn (yêu cầu quyền ADMIN).
 
+### Phản hồi (Feedback) - `/api/v1/feedback`
+*   `GET /`: Lấy tất cả phản hồi (yêu cầu xác thực).
+*   `POST /`: Tạo phản hồi mới (yêu cầu xác thực).
+*   `PUT /:id`: Cập nhật phản hồi (yêu cầu xác thực).
+*   `DELETE /:id`: Xóa phản hồi (yêu cầu quyền ADMIN).
 
-### Feedback - `/api/v1/feedback`
-*   `GET /`: Get all feedback (requires authentication).
-*   `POST /`: Create new feedback (requires authentication).
-*   `PUT /:id`: Update feedback (requires authentication).
-*   `DELETE /:id`: Delete feedback (requires ADMIN privileges).
+### Thông báo (Notification) - `/api/v1/notifications`
+*   `GET /`: Lấy tất cả thông báo (yêu cầu xác thực).
+*   `POST /`: Tạo thông báo mới (yêu cầu quyền ADMIN).
+*   `DELETE /:id`: Xóa thông báo (yêu cầu quyền ADMIN).
 
-### Notification - `/api/v1/notifications`
-*   `GET /`: Get all notifications (requires authentication).
-*   `POST /`: Create a new notification (requires ADMIN privileges).
-*   `DELETE /:id`: Delete a notification (requires ADMIN privileges).
+## Đóng góp
+Chúng tôi chào đón mọi sự đóng góp! Vui lòng fork repository và tạo pull request.
 
-## Contributing
-We welcome all contributions! Please fork the repository and create a pull request.
-
-## License
-This project is licensed under the <YOUR_LICENSE_NAME_E.G._MIT>.
+## Giấy phép
+Dự án này được cấp phép dưới <TÊN_GIẤY_PHÉP_CỦA_BẠN_VÍ_DỤ_MIT>.
