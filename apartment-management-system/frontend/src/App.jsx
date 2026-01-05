@@ -6,7 +6,8 @@ import FeeManagement from "./components/sections/FeeManagement";
 import FeedbackManagement from "./components/sections/FeedbackManagement";
 import ResidentManagement from "./components/sections/ResidentManagement"; // Import mục Cư dân
 import Settings from "./components/sections/Settings"; // Import mục Cài đặt
-import Alert from "./components/Alert";
+import Toast from "./components/Toast";
+import ConfirmationModal from "./components/ConfirmationModal"; // Import ConfirmationModal
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -14,7 +15,8 @@ function App() {
   const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
 
   const [activeSection, setActiveSection] = useState("apartment");
-  const [alert, setAlert] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [confirmationModal, setConfirmationModal] = useState({ isOpen: false, title: "", message: "", onConfirm: null });
 
   const handleLogin = (data) => {
     localStorage.setItem("token", data.token);
@@ -32,7 +34,14 @@ function App() {
     window.location.reload();
   };
 
-  const showAlert = (message, type = "info") => setAlert({ message, type });
+  const showToast = (message, type = "info") => setToast({ message, type });
+  const showConfirmation = (title, message, onConfirm) => {
+    setConfirmationModal({ isOpen: true, title, message, onConfirm });
+  };
+  const hideConfirmation = () => {
+    setConfirmationModal({ ...confirmationModal, isOpen: false });
+  };
+
 
   const renderSection = () => {
     switch (activeSection) {
@@ -41,14 +50,15 @@ function App() {
           <ApartmentManagement
             token={token}
             userRole={role}
-            showToast={showAlert}
+            showToast={showToast}
+            showConfirmation={showConfirmation} // Pass showConfirmation
           />
         );
       case "resident":
-        return <ResidentManagement token={token} showToast={showAlert} />; // Render mục Cư dân
+        return <ResidentManagement token={token} showToast={showToast} showConfirmation={showConfirmation} />; // Render mục Cư dân, pass showConfirmation
       case "fee":
         return (
-          <FeeManagement token={token} userRole={role} showToast={showAlert} />
+          <FeeManagement token={token} userRole={role} showToast={showToast} showConfirmation={showConfirmation} /> // Pass showConfirmation
         );
       case "feedback":
         return (
@@ -56,11 +66,12 @@ function App() {
             token={token}
             userRole={role}
             currentUserId={userId}
-            showToast={showAlert}
+            showToast={showToast}
+            showConfirmation={showConfirmation} // Pass showConfirmation
           />
         );
       case "settings":
-        return <Settings token={token} showToast={showAlert} />; // Render mục Cài đặt
+        return <Settings token={token} showToast={showToast} />; // Render mục Cài đặt
       default:
         return null;
     }
@@ -69,12 +80,12 @@ function App() {
   if (!token)
     return (
       <div className="app-overlay flex items-center justify-center">
-        <Login onLogin={handleLogin} showToast={showAlert} />
-        {alert && (
-          <Alert
-            message={alert.message}
-            type={alert.type}
-            onClose={() => setAlert(null)}
+        <Login onLogin={handleLogin} showToast={showToast} />
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
           />
         )}
       </div>
@@ -91,15 +102,27 @@ function App() {
       />
 
       <main className="max-w-7xl mx-auto p-6">
-        {alert && (
-          <Alert
-            message={alert.message}
-            type={alert.type}
-            onClose={() => setAlert(null)}
-          />
-        )}
         {renderSection()}
       </main>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        onConfirm={() => {
+          confirmationModal.onConfirm();
+          hideConfirmation();
+        }}
+        onClose={hideConfirmation}
+      />
     </div>
   );
 }

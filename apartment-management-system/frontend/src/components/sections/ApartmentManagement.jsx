@@ -7,7 +7,7 @@ import {
 } from "react-icons/hi2";
 import ApartmentModal from "../ApartmentModal";
 
-const ApartmentManagement = ({ token, userRole, showToast }) => {
+const ApartmentManagement = ({ token, userRole, showToast, showConfirmation }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
   const [apartments, setApartments] = useState([]);
   const [filterText, setFilterText] = useState("");
@@ -32,8 +32,7 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
     }
   };
 
-  const handleDelete = async (id, code) => {
-    if (!confirm(`Xóa căn hộ ${code}?`)) return;
+  const executeDelete = async (id) => {
     try {
       await fetch(`${API_URL}/apartments/${id}`, {
         method: "DELETE",
@@ -44,6 +43,14 @@ const ApartmentManagement = ({ token, userRole, showToast }) => {
     } catch (err) {
       showToast("Lỗi khi xóa", "error");
     }
+  };
+
+  const handleDelete = (id, code) => {
+    showConfirmation(
+      "Xác nhận xóa căn hộ",
+      `Bạn có chắc chắn muốn xóa căn hộ ${code}? Hành động này không thể hoàn tác!`,
+      () => executeDelete(id)
+    );
   };
 
   const handleSave = async (formData) => {
