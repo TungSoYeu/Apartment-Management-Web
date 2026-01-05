@@ -102,6 +102,10 @@ const Settings = ({ token, showToast }) => {
                 Xác nhận mật khẩu mới
               </label>
               <input
+                type="password"
+                name="confirmPassword"
+                value={passData.confirmPassword}
+                onChange={handleChange}
                 className="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition"
                 required
               />
