@@ -41,7 +41,7 @@ exports.updateBill = async (req, res) => {
   }
 };
 
-// 4. [MỚI] Xóa hóa đơn
+// 4. Xóa hóa đơn
 exports.deleteBill = async (req, res) => {
   try {
     await billService.deleteBill(req.params.id);
