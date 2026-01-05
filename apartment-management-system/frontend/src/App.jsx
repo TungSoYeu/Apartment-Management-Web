@@ -25,13 +25,17 @@ function App() {
     setToken(data.token);
     setRole(data.user.role);
     setUserId(data.user._id);
+    showToast("Đăng nhập thành công!", "success");
   };
 
   const handleLogout = () => {
     localStorage.clear();
     setToken(null);
     setRole(null);
-    window.location.reload();
+    showToast("Đăng xuất thành công!", "success");
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000); // 5000 milliseconds = 5 seconds
   };
 
   const showToast = (message, type = "info") => setToast({ message, type });
