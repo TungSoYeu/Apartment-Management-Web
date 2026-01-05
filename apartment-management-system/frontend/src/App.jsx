@@ -59,7 +59,14 @@ function App() {
           />
         );
       case "resident":
-        return <ResidentManagement token={token} showToast={showToast} showConfirmation={showConfirmation} />; // Render mục Cư dân, pass showConfirmation
+        return (
+          <ResidentManagement 
+            token={token} 
+            showToast={showToast} 
+            userRole={role}           // <--- Thêm dòng này
+            currentUserId={userId}    // <--- Thêm dòng này
+          />
+        );
       case "fee":
         return (
           <FeeManagement token={token} userRole={role} showToast={showToast} showConfirmation={showConfirmation} /> // Pass showConfirmation

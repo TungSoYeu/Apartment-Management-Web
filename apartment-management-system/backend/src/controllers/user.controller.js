@@ -150,9 +150,17 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-// 7. Lấy user theo ID (Admin)
+// 7. Lấy user theo ID
 exports.getUserById = async (req, res) => {
   try {
+    // KIỂM TRA QUYỀN: Nếu không phải Admin và ID muốn xem không trùng với ID bản thân -> Chặn
+    if (req.user.role !== "ADMIN" && req.user._id.toString() !== req.params.id) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Bạn không có quyền xem thông tin cư dân khác" 
+      });
+    }
+
     const user = await User.findById(req.params.id).populate("currentApartment");
     if (user) {
       res.json({ success: true, data: user });

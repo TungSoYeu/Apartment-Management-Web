@@ -30,7 +30,8 @@ router.patch(
 router.put("/users/:id", protect, authorize("ADMIN"), userCtrl.update);
 
 router.get("/users", protect, authorize("ADMIN"), userCtrl.getUsers);
-router.get("/users/:id", protect, authorize("ADMIN"), userCtrl.getUserById);
+// Cho phép User đăng nhập xem chi tiết (Logic kiểm tra quyền sẽ nằm trong Controller)
+router.get("/users/:id", protect, userCtrl.getUserById);
 router.post(
   "/users/:id/members",
   protect,
