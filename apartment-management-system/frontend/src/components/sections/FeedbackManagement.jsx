@@ -7,7 +7,7 @@ import {
   HiPaperAirplane,
 } from "react-icons/hi2";
 
-const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
+const FeedbackManagement = ({ token, userRole, currentUserId, showToast, showConfirmation }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
   const [activeTab, setActiveTab] = useState("notifications"); // 'notifications', 'send', 'feedback'
   const [items, setItems] = useState([]);
@@ -63,8 +63,7 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
     }
   };
 
-  const handleDelete = async (id, type) => {
-    if (!confirm("Xóa mục này?")) return;
+  const executeDelete = async (id, type) => {
     try {
       await fetch(`${API_URL}/${type}/${id}`, {
         method: "DELETE",
@@ -75,6 +74,14 @@ const FeedbackManagement = ({ token, userRole, currentUserId, showToast }) => {
     } catch (e) {
       showToast("Lỗi", "error");
     }
+  };
+
+  const handleDelete = (id, type) => {
+    showConfirmation(
+      "Xác nhận xóa",
+      "Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác!",
+      () => executeDelete(id, type)
+    );
   };
 
   const tabBaseStyle = "flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200 font-semibold text-sm transform hover:scale-105 active:scale-95";

@@ -10,7 +10,7 @@ import {
 } from "react-icons/hi2";
 import { BsLightningFill, BsDropletFill } from "react-icons/bs";
 
-const FeeManagement = ({ token, userRole, showToast }) => {
+const FeeManagement = ({ token, userRole, showToast, showConfirmation }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
   const [bills, setBills] = useState([]);
 
@@ -83,14 +83,7 @@ const FeeManagement = ({ token, userRole, showToast }) => {
     }
   };
 
-  const handleDeleteBill = async (billId, code) => {
-    if (
-      !window.confirm(
-        `Bạn có chắc muốn XÓA hóa đơn căn ${code}? Hành động này không thể hoàn tác!`,
-      )
-    )
-      return;
-
+  const executeDeleteBill = async (billId) => {
     try {
       const res = await fetch(`${API_URL}/bills/${billId}`, {
         method: "DELETE",
@@ -106,6 +99,14 @@ const FeeManagement = ({ token, userRole, showToast }) => {
     } catch (err) {
       showToast("Lỗi kết nối server", "error");
     }
+  };
+
+  const handleDeleteBill = (billId, code) => {
+    showConfirmation(
+      "Xác nhận xóa hóa đơn",
+      `Bạn có chắc chắn muốn xóa hóa đơn của căn hộ ${code}? Hành động này không thể hoàn tác!`,
+      () => executeDeleteBill(billId)
+    );
   };
 
   const formatMoney = (amount) =>
