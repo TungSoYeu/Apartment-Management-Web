@@ -8,13 +8,12 @@ const ContractModal = ({ isOpen, onClose, data }) => {
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
-  // Tính ngày hết hạn
   const startDate = new Date(contract?.startDate || Date.now());
   const endDate = new Date(startDate);
   endDate.setMonth(endDate.getMonth() + (contract?.duration || 12));
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50 p-4 animate-fadeIn">
+    <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-[100] p-4 animate-fadeIn">
       <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden relative">
         <button
           onClick={onClose}
@@ -33,7 +32,6 @@ const ContractModal = ({ isOpen, onClose, data }) => {
         </div>
 
         <div className="p-6 space-y-5">
-          {/* Thông tin 2 bên */}
           <div className="flex justify-between items-start border-b pb-4">
             <div>
               <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">
@@ -56,23 +54,18 @@ const ContractModal = ({ isOpen, onClose, data }) => {
             </div>
           </div>
 
-          {/* Chi tiết thời hạn */}
-          <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
+          <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border">
             <div>
               <p className="text-[10px] text-gray-500 uppercase font-bold">
                 Ngày ký
               </p>
-              <p className="font-medium text-gray-800">
-                {formatDate(contract?.startDate)}
-              </p>
+              <p>{formatDate(contract?.startDate)}</p>
             </div>
             <div>
               <p className="text-[10px] text-gray-500 uppercase font-bold">
                 Thời hạn
               </p>
-              <p className="font-medium text-gray-800">
-                {contract?.duration || 12} tháng
-              </p>
+              <p>{contract?.duration || 12} tháng</p>
             </div>
             <div>
               <p className="text-[10px] text-gray-500 uppercase font-bold">
@@ -90,19 +83,9 @@ const ContractModal = ({ isOpen, onClose, data }) => {
             </div>
           </div>
 
-          {/* Điều khoản */}
-          <div>
-            <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">
-              Điều khoản / Ghi chú
-            </p>
-            <div className="bg-white border border-gray-200 p-3 rounded-lg text-sm text-gray-600 h-24 overflow-y-auto italic">
-              {contract?.terms || "Không có ghi chú bổ sung."}
-            </div>
-          </div>
-
           <button
             onClick={onClose}
-            className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition"
+            className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-bold"
           >
             Đóng
           </button>

@@ -1,21 +1,14 @@
+/* apartment-management-system/frontend/src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Font chữ mặc định sạch sẽ, hiện đại */
 body {
   font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f3f4f6; /* Màu nền xám nhẹ chuẩn Dashboard */
-  color: #ffffff; /* Màu chữ trắng để nổi bật trên nền */
-}
-
-/* Hiệu ứng nền */
-.app-overlay {
-  min-height: 100vh;
-  /* Nếu bạn dùng ảnh nền, bỏ comment dòng dưới */
-  /* background-image: url('/bg.jpg'); background-size: cover; background-attachment: fixed; */
+  background-color: #f3f4f6;
+  color: #1f2937; /* Đổi lại màu chữ tối để dễ đọc trên nền sáng */
 }
 
 /* Đồng bộ các thẻ Input */
@@ -25,17 +18,16 @@ textarea {
   @apply border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm;
 }
 
-/* Animation */
+/* Sửa animation: Bỏ transform để không gây lỗi vị trí Modal */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
+
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out forwards;
 }
