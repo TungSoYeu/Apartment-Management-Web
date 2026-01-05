@@ -1,7 +1,6 @@
 const Bill = require("../models/Bill");
 const Apartment = require("../models/Apartment");
-const { calculateAmount } = require("../utils/currency");
-const notificationService = require("./notification.service");
+// Lưu ý: Đã xóa import notificationService
 const { mockUploadFile } = require("../utils/mockUpload");
 
 const FEES = {
@@ -21,6 +20,8 @@ class BillService {
     const apartments = await Apartment.find({
       status: { $in: ["OCCUPIED"] },
     }).populate("owner residents");
+
+    // Đã xóa dòng notificationService.deleteNotifications(...)
 
     const results = { created: 0, skipped: 0 };
 
@@ -105,14 +106,7 @@ class BillService {
           });
 
           results.created++;
-
-          if (apt.owner) {
-            await notificationService.createNotification({
-              title: "Hóa đơn mới",
-              content: `Hóa đơn tháng ${m}/${y} căn hộ ${apt.code} đã được tạo. Tổng: ${new Intl.NumberFormat("vi-VN").format(total)}đ`,
-              user: apt.owner._id,
-            });
-          }
+          // Đã xóa hoàn toàn khối if (apt.owner) tạo thông báo tại đây
         } catch (e) {
           console.error(`Lỗi tạo bill căn ${apt.code}:`, e);
           results.skipped++;
@@ -180,7 +174,7 @@ class BillService {
     return await bill.save();
   }
 
-  // 4. [MỚI] Xóa hóa đơn
+  // 4. Xóa hóa đơn
   async deleteBill(id) {
     const deletedBill = await Bill.findByIdAndDelete(id);
     if (!deletedBill) throw new Error("Không tìm thấy hóa đơn cần xóa");
