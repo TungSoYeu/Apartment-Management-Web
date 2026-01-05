@@ -93,6 +93,7 @@ class ApartmentService {
     // QUAN TRỌNG: Đã thêm 'identityCard' vào populate
     const apartments = await Apartment.find(filter)
       .populate("owner", "fullname phone email identityCard")
+      .populate("residents", "fullname phone")
       .lean();
 
     if (user.role === "ADMIN") {

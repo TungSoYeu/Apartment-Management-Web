@@ -19,6 +19,7 @@ const ApartmentModal = ({
     ownerFullname: "",
     ownerEmail: "",
     ownerPhone: "",
+    ownerIdentityCard: "",
     contractNumber: "",
     contractDuration: 12,
     contractDate: new Date().toISOString().split("T")[0],
@@ -29,13 +30,15 @@ const ApartmentModal = ({
     if (isEditing && initialData) {
       setFormData({
         ...initialData,
-        // Reset phần chủ hộ để nhập mới (hoặc map dữ liệu cũ nếu muốn)
-        ownerFullname: "",
-        ownerEmail: "",
-        ownerPhone: "",
-        contractNumber: "",
-        contractDuration: 12,
-        contractDate: new Date().toISOString().split("T")[0],
+        ownerFullname: initialData.owner?.fullname || "",
+        ownerEmail: initialData.owner?.email || "",
+        ownerPhone: initialData.owner?.phone || "",
+        ownerIdentityCard: initialData.owner?.identityCard || "",
+        contractNumber: initialData.contract?.number || "",
+        contractDuration: initialData.contract?.duration || 12,
+        contractDate: initialData.contract?.startDate
+          ? new Date(initialData.contract.startDate).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
       });
     } else {
       // Reset form khi Thêm mới
@@ -48,6 +51,7 @@ const ApartmentModal = ({
         ownerFullname: "",
         ownerEmail: "",
         ownerPhone: "",
+        ownerIdentityCard: "",
         contractNumber: "",
         contractDuration: 12,
         contractDate: new Date().toISOString().split("T")[0],
