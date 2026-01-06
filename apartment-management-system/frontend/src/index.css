@@ -1,24 +1,15 @@
-/* apartment-management-system/frontend/src/index.css */
+/* frontend/src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
   font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   background-color: #f3f4f6;
-  color: #1f2937; /* Đổi lại màu chữ tối để dễ đọc trên nền sáng */
+  color: #1f2937;
 }
 
-/* Đồng bộ các thẻ Input */
-input,
-select,
-textarea {
-  @apply border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm;
-}
-
-/* Sửa animation: Bỏ transform để không gây lỗi vị trí Modal */
+/* Sửa animation: Bỏ transform để Modal không bị kẹt vị trí */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -30,4 +21,10 @@ textarea {
 
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out forwards;
+}
+
+input,
+select,
+textarea {
+  @apply border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm;
 }

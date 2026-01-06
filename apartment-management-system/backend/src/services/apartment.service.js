@@ -1,3 +1,4 @@
+/* backend/src/services/apartment.service.js */
 const Apartment = require("../models/Apartment");
 const User = require("../models/User");
 const { maskPhone } = require("../utils/masking");
@@ -6,7 +7,6 @@ class ApartmentService {
   async createApartment(data) {
     return this.handleSave(data, "CREATE");
   }
-
   async updateApartment(id, data) {
     return this.handleSave(data, "UPDATE", id);
   }
@@ -23,30 +23,27 @@ class ApartmentService {
 
     if (status === "VACANT") {
       updatePayload.owner = null;
-      updatePayload.contract = {};
+      updatePayload.contract = { number: "", terms: "Chưa có" };
     } else if (status === "OCCUPIED" && ownerInfo) {
       let user = await User.findOne({ email: ownerInfo.email });
-
       if (!user) {
         user = await User.create({
           fullname: ownerInfo.fullname,
           email: ownerInfo.email,
           phone: ownerInfo.phone,
           identityCard: ownerInfo.identityCard || "",
-          password: ownerInfo.password || "123456",
+          password: "123456",
           role: "RESIDENT",
           isActive: true,
         });
       } else {
-        // FIX: Cập nhật mọi thông tin thay đổi của chủ hộ khi sửa
+        // CẬP NHẬT: Lưu mọi thay đổi của chủ hộ khi sửa
         user.fullname = ownerInfo.fullname || user.fullname;
         user.phone = ownerInfo.phone || user.phone;
         user.identityCard = ownerInfo.identityCard || user.identityCard;
         await user.save();
       }
-
       updatePayload.owner = user._id;
-      // Liên kết đầy đủ thông tin hợp đồng từ Frontend gửi lên
       updatePayload.contract = {
         number: contractInfo?.number || "",
         startDate: contractInfo?.startDate || new Date(),
@@ -75,23 +72,17 @@ class ApartmentService {
   }
 
   async getAllApartments(query, user) {
-    const { block, floor, status } = query;
     const filter = {};
-    if (user.role === "RESIDENT") {
-      filter.owner = user._id;
-    } else {
-      if (block) filter.block = block;
-      if (floor) filter.floor = floor;
-      if (status) filter.status = status;
+    if (user.role === "RESIDENT") filter.owner = user._id;
+    else {
+      if (query.block) filter.block = query.block;
+      if (query.status) filter.status = query.status;
     }
-
     const apartments = await Apartment.find(filter)
-      .populate("owner", "fullname phone email identityCard")
-      .populate("residents", "fullname phone")
+      .populate("owner", "fullname phone email identityCard members") // Thêm 'members'
+      .populate("residents", "fullname phone members") // Thêm 'members'
       .lean();
-
     if (user.role === "ADMIN") return apartments;
-
     return apartments.map((apt) => ({
       ...apt,
       owner: apt.owner

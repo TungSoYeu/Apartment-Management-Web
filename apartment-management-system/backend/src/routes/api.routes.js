@@ -32,25 +32,9 @@ router.put("/users/:id", protect, authorize("ADMIN"), userCtrl.update);
 router.get("/users", protect, authorize("ADMIN"), userCtrl.getUsers);
 // Cho phép User đăng nhập xem chi tiết (Logic kiểm tra quyền sẽ nằm trong Controller)
 router.get("/users/:id", protect, userCtrl.getUserById);
-router.post(
-  "/users/:id/members",
-  protect,
-  authorize("ADMIN"),
-  userCtrl.addMember,
-);
-router.delete(
-  "/users/:id/members/:memberId",
-  protect,
-  authorize("ADMIN"),
-  userCtrl.removeMember,
-);
-router.put(
-  "/users/:id/members/:memberId",
-  protect,
-  authorize("ADMIN"),
-  userCtrl.updateMember,
-);
-
+router.post("/users/:id/members", protect, userCtrl.addMember);
+router.delete("/users/:id/members/:memberId", protect, userCtrl.removeMember);
+router.put("/users/:id/members/:memberId", protect, userCtrl.updateMember);
 
 // =======================
 // 2. APARTMENT ROUTES
