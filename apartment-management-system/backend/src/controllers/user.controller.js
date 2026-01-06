@@ -154,14 +154,19 @@ exports.getUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     // KIỂM TRA QUYỀN: Nếu không phải Admin và ID muốn xem không trùng với ID bản thân -> Chặn
-    if (req.user.role !== "ADMIN" && req.user._id.toString() !== req.params.id) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "Bạn không có quyền xem thông tin cư dân khác" 
+    if (
+      req.user.role !== "ADMIN" &&
+      req.user._id.toString() !== req.params.id
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Bạn không có quyền xem thông tin cư dân khác",
       });
     }
 
-    const user = await User.findById(req.params.id).populate("currentApartment");
+    const user = await User.findById(req.params.id).populate(
+      "currentApartment",
+    );
     if (user) {
       res.json({ success: true, data: user });
     } else {
@@ -177,34 +182,55 @@ exports.addMember = async (req, res) => {
     const { name, phone } = req.body;
     const user = await User.findById(req.params.id);
 
-    if (user) {
-      user.members.push({ name, phone });
-      await user.save();
-      res.json({ success: true, message: "Thêm thành viên thành công", data: user });
-    } else {
-      res.status(404).json({ success: false, message: "User không tồn tại" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User không tồn tại" });
+
+    // KIỂM TRA QUYỀN: Phải là Admin hoặc chính chủ hộ đó
+    if (
+      req.user.role !== "ADMIN" &&
+      req.user._id.toString() !== user._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Bạn không có quyền này" });
     }
+
+    user.members.push({ name, phone });
+    await user.save();
+    res.json({
+      success: true,
+      message: "Thêm thành viên thành công",
+      data: user,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// 9. Xóa thành viên khỏi hộ gia đình
+// 9. Xóa thành viên
 exports.removeMember = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (user) {
-      const member = user.members.id(req.params.memberId);
-      if (member) {
-        member.remove();
-        await user.save();
-        res.json({ success: true, message: "Xóa thành viên thành công", data: user });
-      } else {
-        res.status(404).json({ success: false, message: "Thành viên không tồn tại" });
-      }
-    } else {
-      res.status(404).json({ success: false, message: "User không tồn tại" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User không tồn tại" });
+
+    if (
+      req.user.role !== "ADMIN" &&
+      req.user._id.toString() !== user._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Bạn không có quyền này" });
     }
+
+    // Sử dụng pull để xóa thành viên khỏi mảng
+    user.members.pull(req.params.memberId);
+    await user.save();
+    res.json({ success: true, message: "Xóa thành viên thành công" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -215,19 +241,30 @@ exports.updateMember = async (req, res) => {
   try {
     const { name, phone } = req.body;
     const user = await User.findById(req.params.id);
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User không tồn tại" });
 
-    if (user) {
-      const member = user.members.id(req.params.memberId);
-      if (member) {
-        member.name = name || member.name;
-        member.phone = phone || member.phone;
-        await user.save();
-        res.json({ success: true, message: "Cập nhật thành viên thành công", data: user });
-      } else {
-        res.status(404).json({ success: false, message: "Thành viên không tồn tại" });
-      }
+    if (
+      req.user.role !== "ADMIN" &&
+      req.user._id.toString() !== user._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Bạn không có quyền này" });
+    }
+
+    const member = user.members.id(req.params.memberId);
+    if (member) {
+      member.name = name || member.name;
+      member.phone = phone || member.phone;
+      await user.save();
+      res.json({ success: true, message: "Cập nhật thành công", data: user });
     } else {
-      res.status(404).json({ success: false, message: "User không tồn tại" });
+      res
+        .status(404)
+        .json({ success: false, message: "Thành viên không tồn tại" });
     }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
