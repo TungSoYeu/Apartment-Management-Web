@@ -16,7 +16,7 @@ const Login = ({ onLogin }) => {
       });
       const data = await res.json();
       if (data.success) {
-        onLogin(data); // Truyền cả object data (chứa token, user)
+        onLogin(data);
       } else {
         setError(data.message);
       }
@@ -26,35 +26,55 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-96 border border-gray-200">
-        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
-          Cổng Quản Trị
+    /* Lớp nền trong suốt kèm hiệu ứng mờ để Card đăng nhập nổi bật trên bg.jpg */
+    <div className="fixed inset-0 flex justify-center items-center bg-slate-900/20 backdrop-blur-sm p-4">
+      <div className="bg-white/95 p-8 rounded-2xl shadow-2xl w-full max-w-[380px] border border-white/20 animate-fadeIn">
+        {/* Đổi tiêu đề thành Đăng nhập */}
+        <h2 className="text-3xl font-extrabold mb-8 text-center text-indigo-700 tracking-tight">
+          Đăng nhập
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-          />
-          <input
-            className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mật khẩu"
-          />
-          <button className="bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">
-            Đăng Nhập
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-500 uppercase ml-1">
+              Email
+            </label>
+            <input
+              className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 text-sm transition-all"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@company.com"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-slate-500 uppercase ml-1">
+              Mật khẩu
+            </label>
+            <input
+              className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 text-sm transition-all"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button className="bg-indigo-600 text-white py-3.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 mt-2 active:scale-[0.98]">
+            Vào hệ thống
           </button>
         </form>
+
         {error && (
-          <p className="text-red-500 mt-4 text-center text-sm bg-red-50 p-2 rounded">
+          <div className="text-red-600 mt-5 text-center text-xs font-bold bg-red-50 p-3 rounded-lg border border-red-100 animate-pulse">
             {error}
-          </p>
+          </div>
         )}
+
+        <p className="text-center text-slate-400 text-[11px] mt-8">
+          Hệ thống Quản lý Chung cư Blue Moon
+        </p>
       </div>
     </div>
   );
