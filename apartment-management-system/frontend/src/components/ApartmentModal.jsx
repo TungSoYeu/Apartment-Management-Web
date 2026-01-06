@@ -71,7 +71,7 @@ const ApartmentModal = ({
       <div className="bg-white rounded-xl w-full max-w-[420px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border border-slate-200 animate-fadeIn text-slate-900">
         <div className="bg-slate-50 p-3 border-b flex justify-between items-center">
           <h2 className="text-base font-bold text-slate-800">
-            {isEditing ? "✏️ Sửa Căn Hộ & HĐ" : "✨ Thêm Căn Hộ & HĐ"}
+            {isEditing ? " Sửa Căn Hộ & HĐ" : " Thêm Căn Hộ & HĐ"}
           </h2>
           <button
             onClick={onClose}
