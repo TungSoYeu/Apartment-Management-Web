@@ -26,9 +26,9 @@ const Header = ({ activeSection, onNavigate, onLogout }) => {
           onClick={() => onNavigate("apartment")}
         >
           <img
-            src=""
+            src="/logo.png"
             alt="Logo"
-            className="h-10 w-auto object-contain bg-slate-100 rounded"
+            className="h-20 w-auto object-contain rounded"
           />
         </div>
 
