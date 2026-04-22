@@ -9,7 +9,7 @@ import {
 
 const FeedbackManagement = ({ token, userRole, currentUserId, showToast, showConfirmation }) => {
   const API_URL = "http://127.0.0.1:3000/api/v1";
-  const [activeTab, setActiveTab] = useState("notifications"); // 'notifications', 'send', 'feedback'
+  const [activeTab, setActiveTab] = useState("notifications"); 
   const [items, setItems] = useState([]);
   const [content, setContent] = useState("");
 
