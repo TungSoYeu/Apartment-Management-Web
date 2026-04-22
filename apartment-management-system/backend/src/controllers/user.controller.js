@@ -1,20 +1,15 @@
 const User = require("../models/User");
 
-// Hàm tạo token giả lập (Bạn có thể thay bằng JWT thật sau này)
 const generateToken = (id) => {
   return "mock_token_" + id;
 };
 
-// 1. Đăng nhập
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Tìm user và lấy luôn field password (vì mặc định select: false nếu cấu hình trong model)
     const user = await User.findOne({ email });
 
-    // Kiểm tra user có tồn tại và khớp mật khẩu không
-    // Sử dụng hàm matchPassword đã định nghĩa trong Model User.js
     if (user && (await user.matchPassword(password))) {
       if (!user.isActive) {
         return res.status(401).json({
@@ -44,7 +39,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// 2. Đăng ký cư dân (Resident)
 exports.register = async (req, res) => {
   try {
     const { fullname, email, password, phone, identityCard } = req.body;
@@ -56,7 +50,6 @@ exports.register = async (req, res) => {
         .json({ success: false, message: "Email đã tồn tại" });
     }
 
-    // Khi create, pre('save') trong Model sẽ tự động mã hóa password
     const user = await User.create({
       fullname,
       email,
@@ -64,7 +57,7 @@ exports.register = async (req, res) => {
       phone,
       identityCard,
       role: "RESIDENT",
-      isActive: false, // Cần admin duyệt
+      isActive: false, 
     });
 
     res.status(201).json({
@@ -77,7 +70,6 @@ exports.register = async (req, res) => {
   }
 };
 
-// 3. Duyệt cư dân (Approve) - Chỉ Admin
 exports.approve = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -93,10 +85,9 @@ exports.approve = async (req, res) => {
   }
 };
 
-// 4. Cập nhật thông tin User
+
 exports.update = async (req, res) => {
   try {
-    // Không cho phép update password qua route này để đảm bảo an toàn
     const { password, ...updateData } = req.body;
 
     const user = await User.findByIdAndUpdate(req.params.id, updateData, {
@@ -108,10 +99,8 @@ exports.update = async (req, res) => {
   }
 };
 
-// 5. Đổi mật khẩu (Sửa lỗi so sánh password cũ)
 exports.changePassword = async (req, res) => {
   try {
-    // Lấy userId từ middleware protect (req.user đã được gán ở auth.middleware)
     const userId = req.user._id;
     const { oldPassword, newPassword } = req.body;
 
@@ -121,16 +110,12 @@ exports.changePassword = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User không tồn tại" });
     }
-
-    // Kiểm tra mật khẩu cũ có đúng không (dùng hàm matchPassword của model)
     const isMatch = await user.matchPassword(oldPassword);
     if (!isMatch) {
       return res
         .status(400)
         .json({ success: false, message: "Mật khẩu cũ không đúng!" });
     }
-
-    // Gán mật khẩu mới và lưu lại (pre('save') sẽ tự động mã hóa)
     user.password = newPassword;
     await user.save();
 
@@ -140,7 +125,7 @@ exports.changePassword = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-// 6. Lấy tất cả user (Admin)
+
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find({}).populate("currentApartment");
@@ -150,10 +135,10 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-// 7. Lấy user theo ID
+
 exports.getUserById = async (req, res) => {
   try {
-    // KIỂM TRA QUYỀN: Nếu không phải Admin và ID muốn xem không trùng với ID bản thân -> Chặn
+    
     if (
       req.user.role !== "ADMIN" &&
       req.user._id.toString() !== req.params.id
@@ -176,7 +161,7 @@ exports.getUserById = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-// 8. Thêm thành viên vào hộ gia đình
+
 exports.addMember = async (req, res) => {
   try {
     const { name, phone } = req.body;
@@ -187,7 +172,7 @@ exports.addMember = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User không tồn tại" });
 
-    // KIỂM TRA QUYỀN: Phải là Admin hoặc chính chủ hộ đó
+   
     if (
       req.user.role !== "ADMIN" &&
       req.user._id.toString() !== user._id.toString()
@@ -209,7 +194,7 @@ exports.addMember = async (req, res) => {
   }
 };
 
-// 9. Xóa thành viên
+
 exports.removeMember = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -227,7 +212,7 @@ exports.removeMember = async (req, res) => {
         .json({ success: false, message: "Bạn không có quyền này" });
     }
 
-    // Sử dụng pull để xóa thành viên khỏi mảng
+  
     user.members.pull(req.params.memberId);
     await user.save();
     res.json({ success: true, message: "Xóa thành viên thành công" });
@@ -236,7 +221,7 @@ exports.removeMember = async (req, res) => {
   }
 };
 
-// 10. Cập nhật thông tin thành viên
+
 exports.updateMember = async (req, res) => {
   try {
     const { name, phone } = req.body;
