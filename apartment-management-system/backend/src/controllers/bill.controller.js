@@ -1,6 +1,5 @@
 const billService = require("../services/bill.service");
 
-// 1. Tạo hóa đơn
 exports.generateMonthlyBills = async (req, res) => {
   try {
     const { month, year } = req.body;
@@ -17,7 +16,6 @@ exports.generateMonthlyBills = async (req, res) => {
   }
 };
 
-// 2. Lấy danh sách
 exports.getAllBills = async (req, res) => {
   try {
     const bills = await billService.getAllBills(req.query, req.user);
@@ -27,7 +25,6 @@ exports.getAllBills = async (req, res) => {
   }
 };
 
-// 3. Cập nhật hóa đơn
 exports.updateBill = async (req, res) => {
   try {
     const updatedBill = await billService.updateBill(req.params.id, req.body);
@@ -41,7 +38,6 @@ exports.updateBill = async (req, res) => {
   }
 };
 
-// 4. Xóa hóa đơn
 exports.deleteBill = async (req, res) => {
   try {
     await billService.deleteBill(req.params.id);
@@ -51,7 +47,6 @@ exports.deleteBill = async (req, res) => {
   }
 };
 
-// 5. Thanh toán
 exports.payBill = async (req, res) => {
   try {
     const bill = await billService.processPayment(req.params.id, req.body);
