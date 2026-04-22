@@ -1,6 +1,4 @@
 const User = require("../models/User");
-
-// Middleware xác thực đăng nhập
 exports.protect = async (req, res, next) => {
   let token;
 
@@ -11,16 +9,10 @@ exports.protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
 
-      // Ở môi trường dev/demo, ta dùng giả lập token hoặc lấy ID từ token giả
-      // Nếu bạn dùng JWT thật: const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // GIẢ LẬP: Token dạng "mock_token_IDUSER"
-      // Nếu bạn dùng JWT thật, hãy thay đoạn logic này
       let userId;
       if (token.startsWith("mock_token_")) {
         userId = token.replace("mock_token_", "");
       } else {
-        // Fallback nếu logic token khác
         return res
           .status(401)
           .json({ success: false, message: "Token không hợp lệ" });
@@ -50,7 +42,6 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-// Middleware phân quyền (Admin, Accountant...)
 exports.authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
