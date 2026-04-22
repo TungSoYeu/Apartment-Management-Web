@@ -4,7 +4,7 @@ const createFeedback = async (req, res) => {
   try {
     const feedback = await feedbackService.createFeedback({
       ...req.body,
-      user: req.user.id, // Assuming req.user.id is set by auth middleware
+      user: req.user.id, 
     });
     res.status(201).json({ success: true, data: feedback });
   } catch (error) {
