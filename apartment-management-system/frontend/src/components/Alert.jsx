@@ -4,11 +4,11 @@ import {
   HiInformationCircle,
   HiXMark,
 } from "react-icons/hi2";
-import { useEffect } from "react"; // Ensure useEffect is imported
+import { useEffect } from "react"; 
 
 const Alert = ({ message, type, onClose }) => {
   useEffect(() => {
-    if (message) { // Only set timer if there's a message to display
+    if (message) { 
       const timer = setTimeout(() => {
         onClose();
       }, 3000);
