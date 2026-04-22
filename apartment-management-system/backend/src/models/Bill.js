@@ -8,11 +8,11 @@ const BillSchema = new mongoose.Schema(
       ref: "Apartment",
       required: true,
     },
-    // --- THÊM 2 TRƯỜNG NÀY ĐỂ LỌC LỊCH SỬ ---
+ 
     month: { type: Number, required: true },
     year: { type: Number, required: true },
 
-    billingCycle: { type: String, required: true }, // Vẫn giữ để hiển thị (VD: "1-2026")
+    billingCycle: { type: String, required: true }, 
 
     apartmentSnapshot: {
       code: String,
