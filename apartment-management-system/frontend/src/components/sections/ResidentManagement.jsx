@@ -1,4 +1,3 @@
-/* apartment-management-system/frontend/src/components/sections/ResidentManagement.jsx */
 import { useState, useEffect } from "react";
 import ContractModal from "../ContractModal";
 import { HiFolder, HiDocumentText } from "react-icons/hi2";
@@ -101,7 +100,7 @@ const ResidentManagement = ({ token, showToast, userRole, currentUserId }) => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
-                    // SỬA TẠI ĐÂY: Gộp thêm thông tin 'owner' từ biến 'user' hiện tại
+                   
                     onClick={() =>
                       setSelectedApt({ ...user.currentApartment, owner: user })
                     }
