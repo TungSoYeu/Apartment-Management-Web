@@ -33,12 +33,12 @@ const apartmentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     }],
-    // --- THÔNG TIN HỢP ĐỒNG (MỚI THÊM) ---
+
     contract: {
-      number: { type: String, default: "" }, // Số hợp đồng
-      startDate: { type: Date, default: Date.now }, // Ngày ký
-      duration: { type: Number, default: 12 }, // Thời hạn (tháng)
-      terms: { type: String, default: "Thuê dài hạn" }, // Điều khoản/Loại hình
+      number: { type: String, default: "" }, 
+      startDate: { type: Date, default: Date.now }, 
+      duration: { type: Number, default: 12 }, 
+      terms: { type: String, default: "Thuê dài hạn" }, 
     },
   },
   { timestamps: true },
