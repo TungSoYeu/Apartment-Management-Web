@@ -1,4 +1,3 @@
-/* backend/src/services/apartment.service.js */
 const Apartment = require("../models/Apartment");
 const User = require("../models/User");
 const { maskPhone } = require("../utils/masking");
@@ -79,8 +78,8 @@ class ApartmentService {
       if (query.status) filter.status = query.status;
     }
     const apartments = await Apartment.find(filter)
-      .populate("owner", "fullname phone email identityCard members") // Thêm 'members'
-      .populate("residents", "fullname phone members") // Thêm 'members'
+      .populate("owner", "fullname phone email identityCard members") 
+      .populate("residents", "fullname phone members") 
       .lean();
     if (user.role === "ADMIN") return apartments;
     return apartments.map((apt) => ({
