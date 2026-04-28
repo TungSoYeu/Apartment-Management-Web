@@ -2,11 +2,9 @@ const express = require("express");
 const router = express.Router();
 const { protect, authorize } = require("../middlewares/auth.middleware");
 
-// Import Controllers
 const userCtrl = require("../controllers/user.controller");
 const aptCtrl = require("../controllers/apartment.controller");
 
-// Import Routes con
 const billRoutes = require("./bill.routes");
 const notificationRoutes = require("./notification.routes");
 const feedbackRoutes = require("./feedback.routes");
