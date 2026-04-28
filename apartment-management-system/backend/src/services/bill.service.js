@@ -9,7 +9,7 @@ const FEES = {
 };
 
 class BillService {
-  // 1. Tạo hóa đơn hàng loạt
+
   async generateMonthlyBills(month, year) {
     const m = parseInt(month);
     const y = parseInt(year);
@@ -20,7 +20,6 @@ class BillService {
       status: { $in: ["OCCUPIED"] },
     }).populate("owner residents");
 
-    // Đã xóa dòng notificationService.deleteNotifications(...)
 
     const results = { created: 0, skipped: 0 };
 
@@ -32,7 +31,6 @@ class BillService {
               ? new Date(apt.contract.startDate)
               : new Date();
 
-          // Logic: Nếu chưa đến ngày ở -> Không tạo bill
           if (contractStart > endOfBillingMonth) {
             results.skipped++;
             return;
@@ -105,7 +103,6 @@ class BillService {
           });
 
           results.created++;
-          // Đã xóa hoàn toàn khối if (apt.owner) tạo thông báo tại đây
         } catch (e) {
           console.error(`Lỗi tạo bill căn ${apt.code}:`, e);
           results.skipped++;
@@ -115,7 +112,6 @@ class BillService {
     return results;
   }
 
-  // 2. Lấy danh sách
   async getAllBills(query, user) {
     const { status, month, year } = query;
     const filter = {};
@@ -136,7 +132,6 @@ class BillService {
     return await Bill.find(filter).sort({ createdAt: -1 });
   }
 
-  // 3. Cập nhật hóa đơn
   async updateBill(id, data) {
     const bill = await Bill.findById(id);
     if (!bill) throw new Error("Không tìm thấy hóa đơn");
@@ -173,7 +168,7 @@ class BillService {
     return await bill.save();
   }
 
-  // 4. Xóa hóa đơn
+
   async deleteBill(id) {
     const deletedBill = await Bill.findByIdAndDelete(id);
     if (!deletedBill) throw new Error("Không tìm thấy hóa đơn cần xóa");
