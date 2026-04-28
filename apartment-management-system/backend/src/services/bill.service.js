@@ -1,6 +1,5 @@
 const Bill = require("../models/Bill");
 const Apartment = require("../models/Apartment");
-// Lưu ý: Đã xóa import notificationService
 const { mockUploadFile } = require("../utils/mockUpload");
 
 const FEES = {
